@@ -88,5 +88,39 @@ def upload_file():
         return jsonify({"message": f"Error occurred while uploading: {str(e)}"}), 500
 
 
+@app.route('/enhance', methods=['POST'])
+def enhance_image():
+    # Parse request data
+    try:
+        data = request.json
+        if not data or 'file_url' not in data:
+            return jsonify({"message": "Invalid request: 'file_url' is required"}), 400
+
+        file_url = data['file_url']
+        enhancement_options = {
+            "face": data.get("face", False),
+            "background": data.get("background", False),
+            "colorization": data.get("colorization", False),
+            "text": data.get("text", False),
+        }
+
+        # Placeholder: Simulate the enhancement process
+        app.logger.info(f"Enhancing image from URL: {file_url}")
+        app.logger.info(f"Enhancement options: {enhancement_options}")
+
+        # Simulated enhanced file URL (mock response)
+        enhanced_file_url = f"{file_url.split('.')[0]}_enhanced.jpg"
+
+        return jsonify({
+            "message": "Image enhancement completed (mock response)",
+            "enhanced_file_url": enhanced_file_url,
+            "enhancement_options": enhancement_options
+        }), 200
+
+    except Exception as e:
+        app.logger.error(f"Error during enhancement: {str(e)}")
+        return jsonify({"message": f"Error during enhancement: {str(e)}"}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True)

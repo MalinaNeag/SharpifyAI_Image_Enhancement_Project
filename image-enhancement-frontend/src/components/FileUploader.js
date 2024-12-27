@@ -26,6 +26,7 @@ const FileUploader = () => {
     const [preview, setPreview] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [isUploaded, setIsUploaded] = useState(false);
+    const [uploadedFileUrl, setUploadedFileUrl] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
     // Enhancement options
@@ -43,6 +44,7 @@ const FileUploader = () => {
         setSelectedFile(file);
         setPreview(URL.createObjectURL(file));
         setIsUploaded(false);
+        setUploadedFileUrl(null);
         setErrorMessage(null);
     };
 
@@ -50,6 +52,7 @@ const FileUploader = () => {
         setSelectedFile(null);
         setPreview(null);
         setIsUploaded(false);
+        setUploadedFileUrl(null);
         setErrorMessage(null);
     };
 
@@ -66,26 +69,54 @@ const FileUploader = () => {
                 body: formData,
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "An error occurred while uploading the file.");
+            const data = await response.json();
+            if (response.ok) {
+                setIsUploaded(true);
+                setUploadedFileUrl(data.file_url); // Save the uploaded file URL
+                setErrorMessage(null);
+            } else {
+                setErrorMessage(data.message || "Upload failed.");
             }
-            setIsUploaded(true);
-            setErrorMessage(null);
-            setIsUploading(false);
         } catch (error) {
             setErrorMessage("File was not uploaded. Please try again.");
+        } finally {
             setIsUploading(false);
         }
     };
 
-    const enhanceImage = () => {
-        console.log("Enhancement options selected:");
-        console.log("Face Enhancement:", faceEnhancement);
-        console.log("Background Enhancement:", backgroundEnhancement);
-        console.log("Colorization:", colorization);
-        console.log("Text Enhancement:", textEnhancement);
-        alert("Enhancement process started! (To be implemented)");
+    const enhanceImage = async () => {
+        if (!uploadedFileUrl) {
+            alert("Please upload an image first!");
+            return;
+        }
+
+        const requestBody = {
+            file_url: uploadedFileUrl,
+            face: faceEnhancement,
+            background: backgroundEnhancement,
+            colorization: colorization,
+            text: textEnhancement,
+        };
+
+        try {
+            const response = await fetch("http://127.0.0.1:5000/enhance", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestBody),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                console.log("Enhanced image:", data.enhanced_file_url);
+                alert("Enhancement completed!");
+                // Optionally update state to show enhanced image or allow download
+            } else {
+                alert(data.message || "Enhancement failed.");
+            }
+        } catch (error) {
+            console.error("Error enhancing image:", error);
+            alert("An error occurred while enhancing the image.");
+        }
     };
 
     const { getRootProps, getInputProps } = useDropzone({
@@ -163,7 +194,6 @@ const FileUploader = () => {
                                 <CloseIcon />
                             </IconButton>
                         </Box>
-                        {/* Centering the Upload button */}
                         <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
                             <Button
                                 variant="contained"
