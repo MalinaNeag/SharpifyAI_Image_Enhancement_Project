@@ -7,18 +7,22 @@ const FileUploader = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
-    const [uploadedFilePath, setUploadedFilePath] = useState(null);
+    const [isUploaded, setIsUploaded] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const onDrop = (acceptedFiles) => {
         const file = acceptedFiles[0];
         setSelectedFile(file);
         setPreview(URL.createObjectURL(file));
+        setIsUploaded(false); // Reset upload state
+        setErrorMessage(null); // Clear previous errors
     };
 
     const removeImage = () => {
         setSelectedFile(null);
         setPreview(null);
-        setUploadedFilePath(null);
+        setIsUploaded(false);
+        setErrorMessage(null);
     };
 
     const uploadFile = async () => {
@@ -28,25 +32,28 @@ const FileUploader = () => {
         formData.append("file", selectedFile);
 
         try {
+            setIsUploading(true);
             const response = await fetch("http://127.0.0.1:5000/upload", {
                 method: "POST",
                 body: formData,
             });
 
-            console.log("Response:", response); // Log response object
-
             if (!response.ok) {
-                // Log status and error details
-                console.error("Response not OK:", response.status, response.statusText);
-                throw new Error("Failed to upload file!");
+                const errorData = await response.json();
+                console.error("Error response from server:", errorData);
+                throw new Error(errorData.message || "An error occurred while uploading the file.");
             }
 
             const data = await response.json();
-            console.log("Response Data:", data); // Log JSON response
-            alert(`File uploaded successfully! File Path: ${data.file_path}`);
+            console.log("File uploaded successfully:", data);
+
+            setIsUploaded(true);
+            setErrorMessage(null);
+            setIsUploading(false);
         } catch (error) {
-            console.error("Error uploading file:", error);
-            alert("An error occurred while uploading the file.");
+            console.error("Error during file upload:", error);
+            setErrorMessage(error.message || "Unexpected error during file upload.");
+            setIsUploading(false);
         }
     };
 
@@ -120,36 +127,47 @@ const FileUploader = () => {
                         Selected File: {selectedFile.name}
                     </Typography>
                 )}
-                <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                        marginTop: 3,
-                        backgroundColor: "#FF00FF",
-                        color: "#FFFFFF",
-                        "&:hover": {
-                            backgroundColor: "#D000D0",
-                        },
-                    }}
-                    onClick={uploadFile}
-                    disabled={!selectedFile || isUploading}
-                >
-                    {isUploading ? "Uploading..." : "Upload"}
-                </Button>
-                {uploadedFilePath && (
-                    <Box sx={{ marginTop: 3 }}>
-                        <Typography variant="h6">Uploaded Image:</Typography>
-                        <img
-                            src={uploadedFilePath}
-                            alt="Uploaded"
-                            style={{
-                                maxWidth: "100%",
-                                height: "auto",
-                                borderRadius: 8,
-                                marginTop: 8,
-                            }}
-                        />
-                    </Box>
+                {!isUploaded && !errorMessage && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{
+                            marginTop: 3,
+                            backgroundColor: "#FF00FF",
+                            color: "#FFFFFF",
+                            "&:hover": {
+                                backgroundColor: "#D000D0",
+                            },
+                        }}
+                        onClick={uploadFile}
+                        disabled={!selectedFile || isUploading}
+                    >
+                        {isUploading ? "Uploading..." : "Upload"}
+                    </Button>
+                )}
+                {isUploaded && (
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                            marginTop: 2,
+                            fontStyle: "italic",
+                        }}
+                    >
+                        File uploaded successfully!
+                    </Typography>
+                )}
+                {errorMessage && (
+                    <Typography
+                        variant="body2"
+                        color="error"
+                        sx={{
+                            marginTop: 2,
+                            fontWeight: "bold",
+                        }}
+                    >
+                        {errorMessage}
+                    </Typography>
                 )}
             </CardContent>
         </Card>
