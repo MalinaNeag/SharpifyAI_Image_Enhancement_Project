@@ -37,9 +37,16 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 # Create the uploads folder if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+
 # Helper function to check allowed file extensions
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/')
+def home():
+    return jsonify({"message": "Backend is running!"})
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -79,6 +86,7 @@ def upload_file():
     except Exception as e:
         app.logger.error(f"Error occurred while uploading: {str(e)}")
         return jsonify({"message": f"Error occurred while uploading: {str(e)}"}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
