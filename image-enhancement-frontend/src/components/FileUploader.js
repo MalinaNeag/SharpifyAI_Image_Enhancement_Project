@@ -1,24 +1,53 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Box, Typography, Button, Card, CardContent, CardMedia, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close"; // X icon for removing the image
+import CloseIcon from "@mui/icons-material/Close";
 
-const FileUploader = ({ onFileUpload }) => {
+const FileUploader = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadedFilePath, setUploadedFilePath] = useState(null);
 
     const onDrop = (acceptedFiles) => {
         const file = acceptedFiles[0];
         setSelectedFile(file);
         setPreview(URL.createObjectURL(file));
-        if (onFileUpload) {
-            onFileUpload(file); // Pass the file to the parent component
-        }
     };
 
     const removeImage = () => {
         setSelectedFile(null);
         setPreview(null);
+        setUploadedFilePath(null);
+    };
+
+    const uploadFile = async () => {
+        if (!selectedFile) return;
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        try {
+            const response = await fetch("http://127.0.0.1:5000/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            console.log("Response:", response); // Log response object
+
+            if (!response.ok) {
+                // Log status and error details
+                console.error("Response not OK:", response.status, response.statusText);
+                throw new Error("Failed to upload file!");
+            }
+
+            const data = await response.json();
+            console.log("Response Data:", data); // Log JSON response
+            alert(`File uploaded successfully! File Path: ${data.file_path}`);
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            alert("An error occurred while uploading the file.");
+        }
     };
 
     const { getRootProps, getInputProps } = useDropzone({
@@ -102,11 +131,26 @@ const FileUploader = ({ onFileUpload }) => {
                             backgroundColor: "#D000D0",
                         },
                     }}
-                    onClick={() => alert("Upload functionality to be added!")}
-                    disabled={!selectedFile}
+                    onClick={uploadFile}
+                    disabled={!selectedFile || isUploading}
                 >
-                    Upload
+                    {isUploading ? "Uploading..." : "Upload"}
                 </Button>
+                {uploadedFilePath && (
+                    <Box sx={{ marginTop: 3 }}>
+                        <Typography variant="h6">Uploaded Image:</Typography>
+                        <img
+                            src={uploadedFilePath}
+                            alt="Uploaded"
+                            style={{
+                                maxWidth: "100%",
+                                height: "auto",
+                                borderRadius: 8,
+                                marginTop: 8,
+                            }}
+                        />
+                    </Box>
+                )}
             </CardContent>
         </Card>
     );
