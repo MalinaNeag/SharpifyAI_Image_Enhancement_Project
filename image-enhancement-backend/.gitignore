@@ -1,0 +1,11 @@
+# Frontend
+/image-enhancement-frontend/node_modules/
+image-enhancement-frontend/build/
+
+# Backend
+/image-enhancement-backend/uploads/
+/image-enhancement-backend/__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
