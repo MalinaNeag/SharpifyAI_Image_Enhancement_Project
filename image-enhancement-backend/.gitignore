@@ -9,3 +9,5 @@ image-enhancement-frontend/build/
 
 # macOS
 .DS_Store
+
+.env
