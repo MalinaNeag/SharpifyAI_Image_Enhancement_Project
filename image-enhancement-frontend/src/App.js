@@ -1,27 +1,35 @@
 import React, { useState } from "react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { CssBaseline, Switch, Typography, Container } from "@mui/material";
 import FileUploader from "./components/FileUploader";
-import { Container, Typography } from "@mui/material";
 
 const App = () => {
-    const [uploadedFile, setUploadedFile] = useState(null);
+    const [darkMode, setDarkMode] = useState(false);
 
-    const handleFileUpload = (file) => {
-        setUploadedFile(file);
-        console.log("Uploaded file:", file); // For debugging
-    };
+    const theme = createTheme({
+        palette: {
+            mode: darkMode ? "dark" : "light",
+        },
+    });
 
     return (
-        <Container maxWidth="sm" sx={{ textAlign: "center", marginTop: 4 }}>
-            <Typography variant="h4" gutterBottom>
-                Image Enhancement App
-            </Typography>
-            <FileUploader onFileUpload={handleFileUpload} />
-            {uploadedFile && (
-                <Typography variant="body2" sx={{ marginTop: 2 }}>
-                    File ready for processing: {uploadedFile.name}
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Container maxWidth="sm" sx={{ textAlign: "center", marginTop: 4 }}>
+                <Typography variant="h4" gutterBottom>
+                    Image Enhancement App
                 </Typography>
-            )}
-        </Container>
+                <Typography variant="body1">
+                    Toggle Dark Mode
+                </Typography>
+                <Switch
+                    checked={darkMode}
+                    onChange={() => setDarkMode(!darkMode)}
+                    sx={{ marginBottom: 3 }}
+                />
+                <FileUploader onFileUpload={(file) => console.log("Uploaded file:", file)} />
+            </Container>
+        </ThemeProvider>
     );
 };
 
