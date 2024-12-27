@@ -96,18 +96,25 @@ const App = () => {
                 </Toolbar>
             </AppBar>
             <Container
+                maxWidth="lg" // Automatically adjusts width
                 sx={{
                     textAlign: "center",
-                    paddingY: 6,
-                    backgroundColor: darkMode ? "background.paper" : "background.default",
+                    paddingY: { xs: 4, sm: 6 }, // Responsive padding
+                    backgroundColor: "background.paper",
                     borderRadius: 4,
                     boxShadow: darkMode
                         ? "0 4px 12px rgba(0, 0, 0, 0.4)"
                         : "0 4px 12px rgba(0, 0, 0, 0.1)",
-                    marginTop: 4,
+                    marginTop: { xs: 2, sm: 4 },
                 }}
             >
-                <Typography variant="h4" gutterBottom>
+                <Typography
+                    variant="h4"
+                    gutterBottom
+                    sx={{
+                        fontSize: { xs: "1.5rem", sm: "2rem" }, // Responsive font size
+                    }}
+                >
                     Upload and Enhance Your Images
                 </Typography>
                 <FileUploader onFileUpload={(file) => console.log("Uploaded file:", file)} />

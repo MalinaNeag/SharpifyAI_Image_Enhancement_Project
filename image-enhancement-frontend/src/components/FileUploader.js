@@ -36,8 +36,6 @@ const FileUploader = () => {
     const [textEnhancement, setTextEnhancement] = useState(false);
 
     const purpleColor = "#6200EE";
-    const grayColor = "#BDBDBD";
-    const grayTrackColor = "#E0E0E0";
 
     const onDrop = (acceptedFiles) => {
         const file = acceptedFiles[0];
@@ -72,7 +70,7 @@ const FileUploader = () => {
             const data = await response.json();
             if (response.ok) {
                 setIsUploaded(true);
-                setUploadedFileUrl(data.file_url); // Save the uploaded file URL
+                setUploadedFileUrl(data.file_url);
                 setErrorMessage(null);
             } else {
                 setErrorMessage(data.message || "Upload failed.");
@@ -109,7 +107,6 @@ const FileUploader = () => {
             if (response.ok) {
                 console.log("Enhanced image:", data.enhanced_file_url);
                 alert("Enhancement completed!");
-                // Optionally update state to show enhanced image or allow download
             } else {
                 alert(data.message || "Enhancement failed.");
             }
@@ -227,7 +224,7 @@ const FileUploader = () => {
                 {isUploaded && (
                     <>
                         <Grid container spacing={2} sx={{ marginTop: 3 }}>
-                            <Grid item xs={6}>
+                            <Grid item xs={12} sm={6}>
                                 <CardMedia
                                     component="img"
                                     image={preview}
@@ -241,7 +238,7 @@ const FileUploader = () => {
                                     }}
                                 />
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={12} sm={6}>
                                 <Typography
                                     variant="body2"
                                     color="text.secondary"
@@ -261,18 +258,6 @@ const FileUploader = () => {
                                                 onChange={(e) =>
                                                     setFaceEnhancement(e.target.checked)
                                                 }
-                                                sx={{
-                                                    "& .MuiSwitch-thumb": {
-                                                        backgroundColor: faceEnhancement
-                                                            ? purpleColor
-                                                            : grayColor,
-                                                    },
-                                                    "& .MuiSwitch-track": {
-                                                        backgroundColor: faceEnhancement
-                                                            ? purpleColor
-                                                            : grayTrackColor,
-                                                    },
-                                                }}
                                             />
                                         }
                                         label={
@@ -289,18 +274,6 @@ const FileUploader = () => {
                                                 onChange={(e) =>
                                                     setBackgroundEnhancement(e.target.checked)
                                                 }
-                                                sx={{
-                                                    "& .MuiSwitch-thumb": {
-                                                        backgroundColor: backgroundEnhancement
-                                                            ? purpleColor
-                                                            : grayColor,
-                                                    },
-                                                    "& .MuiSwitch-track": {
-                                                        backgroundColor: backgroundEnhancement
-                                                            ? purpleColor
-                                                            : grayTrackColor,
-                                                    },
-                                                }}
                                             />
                                         }
                                         label={
@@ -317,24 +290,12 @@ const FileUploader = () => {
                                                 onChange={(e) =>
                                                     setColorization(e.target.checked)
                                                 }
-                                                sx={{
-                                                    "& .MuiSwitch-thumb": {
-                                                        backgroundColor: colorization
-                                                            ? purpleColor
-                                                            : grayColor,
-                                                    },
-                                                    "& .MuiSwitch-track": {
-                                                        backgroundColor: colorization
-                                                            ? purpleColor
-                                                            : grayTrackColor,
-                                                    },
-                                                }}
                                             />
                                         }
                                         label={
                                             <Box display="flex" alignItems="center" gap={1}>
                                                 <ColorLensIcon />
-                                                Colorize (if grayscale)
+                                                Colorize
                                             </Box>
                                         }
                                     />
@@ -345,18 +306,6 @@ const FileUploader = () => {
                                                 onChange={(e) =>
                                                     setTextEnhancement(e.target.checked)
                                                 }
-                                                sx={{
-                                                    "& .MuiSwitch-thumb": {
-                                                        backgroundColor: textEnhancement
-                                                            ? purpleColor
-                                                            : grayColor,
-                                                    },
-                                                    "& .MuiSwitch-track": {
-                                                        backgroundColor: textEnhancement
-                                                            ? purpleColor
-                                                            : grayTrackColor,
-                                                    },
-                                                }}
                                             />
                                         }
                                         label={
@@ -369,20 +318,24 @@ const FileUploader = () => {
                                 </Box>
                             </Grid>
                         </Grid>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                marginTop: 3,
-                                backgroundColor: purpleColor,
-                                color: "#FFFFFF",
-                                "&:hover": {
-                                    backgroundColor: "#3700B3",
-                                },
-                            }}
-                            onClick={enhanceImage}
-                        >
-                            Enhance <AutoFixHighIcon sx={{ marginLeft: 1 }} />
-                        </Button>
+                        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: purpleColor,
+                                    color: "#FFFFFF",
+                                    "&:hover": {
+                                        backgroundColor: "#3700B3",
+                                    },
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                }}
+                                onClick={enhanceImage}
+                            >
+                                Enhance <AutoFixHighIcon sx={{ marginLeft: 1 }} />
+                            </Button>
+                        </Box>
                     </>
                 )}
                 {errorMessage && (
