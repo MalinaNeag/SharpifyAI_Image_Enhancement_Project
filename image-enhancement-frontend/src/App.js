@@ -28,6 +28,7 @@ const App = () => {
                 primary: darkMode ? "#E0E0E0" : "#000000", // High contrast for readability
                 secondary: darkMode ? "#B0B0B0" : "#555555", // Subtle text
             },
+
         },
         typography: {
             fontFamily: [
