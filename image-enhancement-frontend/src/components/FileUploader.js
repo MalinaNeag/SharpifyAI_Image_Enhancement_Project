@@ -1,7 +1,25 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Box, Typography, Button, Card, CardContent, CardMedia, IconButton } from "@mui/material";
+import {
+    Box,
+    Typography,
+    Button,
+    Card,
+    CardContent,
+    CardMedia,
+    IconButton,
+    Switch,
+    FormControlLabel,
+    Grid,
+    CircularProgress,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import FaceIcon from "@mui/icons-material/Face";
+import LandscapeIcon from "@mui/icons-material/Landscape";
+import ColorLensIcon from "@mui/icons-material/ColorLens";
+import TextFieldsIcon from "@mui/icons-material/TextFields";
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
+import UploadIcon from "@mui/icons-material/Upload";
 
 const FileUploader = () => {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -10,12 +28,22 @@ const FileUploader = () => {
     const [isUploaded, setIsUploaded] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
 
+    // Enhancement options
+    const [faceEnhancement, setFaceEnhancement] = useState(false);
+    const [backgroundEnhancement, setBackgroundEnhancement] = useState(false);
+    const [colorization, setColorization] = useState(false);
+    const [textEnhancement, setTextEnhancement] = useState(false);
+
+    const purpleColor = "#6200EE";
+    const grayColor = "#BDBDBD";
+    const grayTrackColor = "#E0E0E0";
+
     const onDrop = (acceptedFiles) => {
         const file = acceptedFiles[0];
         setSelectedFile(file);
         setPreview(URL.createObjectURL(file));
-        setIsUploaded(false); // Reset upload state
-        setErrorMessage(null); // Clear previous errors
+        setIsUploaded(false);
+        setErrorMessage(null);
     };
 
     const removeImage = () => {
@@ -40,21 +68,24 @@ const FileUploader = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error("Error response from server:", errorData);
                 throw new Error(errorData.message || "An error occurred while uploading the file.");
             }
-
-            const data = await response.json();
-            console.log("File uploaded successfully:", data);
-
             setIsUploaded(true);
             setErrorMessage(null);
             setIsUploading(false);
         } catch (error) {
-            console.error("Error during file upload:", error);
-            setErrorMessage(error.message || "Unexpected error during file upload.");
+            setErrorMessage("File was not uploaded. Please try again.");
             setIsUploading(false);
         }
+    };
+
+    const enhanceImage = () => {
+        console.log("Enhancement options selected:");
+        console.log("Face Enhancement:", faceEnhancement);
+        console.log("Background Enhancement:", backgroundEnhancement);
+        console.log("Colorization:", colorization);
+        console.log("Text Enhancement:", textEnhancement);
+        alert("Enhancement process started! (To be implemented)");
     };
 
     const { getRootProps, getInputProps } = useDropzone({
@@ -65,7 +96,7 @@ const FileUploader = () => {
     return (
         <Card
             sx={{
-                maxWidth: 400,
+                maxWidth: 800,
                 margin: "auto",
                 textAlign: "center",
                 padding: 3,
@@ -79,11 +110,18 @@ const FileUploader = () => {
                     <Box
                         {...getRootProps()}
                         sx={{
-                            border: "2px dashed #FF00FF",
-                            borderRadius: "8px",
-                            padding: 3,
+                            border: `2px dashed ${purpleColor}`,
+                            borderRadius: "12px",
+                            padding: 0,
                             cursor: "pointer",
-                            "&:hover": { backgroundColor: "action.hover" },
+                            height: "300px",
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            "&:hover": {
+                                backgroundColor: "#EDE7F6",
+                            },
                         }}
                     >
                         <input {...getInputProps()} />
@@ -92,70 +130,230 @@ const FileUploader = () => {
                         </Typography>
                     </Box>
                 )}
-                {preview && (
-                    <Box sx={{ position: "relative", marginTop: 2 }}>
-                        <CardMedia
-                            component="img"
-                            image={preview}
-                            alt="Preview"
+
+                {preview && !isUploaded && (
+                    <>
+                        <Box sx={{ position: "relative", marginTop: 3 }}>
+                            <CardMedia
+                                component="img"
+                                image={preview}
+                                alt="Preview"
+                                sx={{
+                                    height: 300,
+                                    width: "100%",
+                                    borderRadius: 4,
+                                    objectFit: "cover",
+                                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                    marginBottom: 2,
+                                }}
+                            />
+                            <IconButton
+                                onClick={removeImage}
+                                sx={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 8,
+                                    backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                    color: "#FFFFFF",
+                                    "&:hover": {
+                                        backgroundColor: "rgba(0, 0, 0, 0.8)",
+                                    },
+                                }}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                        {/* Centering the Upload button */}
+                        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    backgroundColor: purpleColor,
+                                    color: "#FFFFFF",
+                                    "&:hover": {
+                                        backgroundColor: "#3700B3",
+                                    },
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px",
+                                    marginBottom: 2,
+                                }}
+                                onClick={uploadFile}
+                                disabled={isUploading}
+                            >
+                                {isUploading ? (
+                                    <CircularProgress size={24} color="inherit" />
+                                ) : (
+                                    <>
+                                        <UploadIcon />
+                                        Upload
+                                    </>
+                                )}
+                            </Button>
+                        </Box>
+                    </>
+                )}
+
+                {isUploaded && (
+                    <>
+                        <Grid container spacing={2} sx={{ marginTop: 3 }}>
+                            <Grid item xs={6}>
+                                <CardMedia
+                                    component="img"
+                                    image={preview}
+                                    alt="Preview"
+                                    sx={{
+                                        height: 300,
+                                        width: "100%",
+                                        borderRadius: 4,
+                                        objectFit: "cover",
+                                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{
+                                        fontStyle: "italic",
+                                        marginBottom: 3,
+                                        textAlign: "left",
+                                    }}
+                                >
+                                    Choose enhancements:
+                                </Typography>
+                                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={faceEnhancement}
+                                                onChange={(e) =>
+                                                    setFaceEnhancement(e.target.checked)
+                                                }
+                                                sx={{
+                                                    "& .MuiSwitch-thumb": {
+                                                        backgroundColor: faceEnhancement
+                                                            ? purpleColor
+                                                            : grayColor,
+                                                    },
+                                                    "& .MuiSwitch-track": {
+                                                        backgroundColor: faceEnhancement
+                                                            ? purpleColor
+                                                            : grayTrackColor,
+                                                    },
+                                                }}
+                                            />
+                                        }
+                                        label={
+                                            <Box display="flex" alignItems="center" gap={1}>
+                                                <FaceIcon />
+                                                Face
+                                            </Box>
+                                        }
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={backgroundEnhancement}
+                                                onChange={(e) =>
+                                                    setBackgroundEnhancement(e.target.checked)
+                                                }
+                                                sx={{
+                                                    "& .MuiSwitch-thumb": {
+                                                        backgroundColor: backgroundEnhancement
+                                                            ? purpleColor
+                                                            : grayColor,
+                                                    },
+                                                    "& .MuiSwitch-track": {
+                                                        backgroundColor: backgroundEnhancement
+                                                            ? purpleColor
+                                                            : grayTrackColor,
+                                                    },
+                                                }}
+                                            />
+                                        }
+                                        label={
+                                            <Box display="flex" alignItems="center" gap={1}>
+                                                <LandscapeIcon />
+                                                Background
+                                            </Box>
+                                        }
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={colorization}
+                                                onChange={(e) =>
+                                                    setColorization(e.target.checked)
+                                                }
+                                                sx={{
+                                                    "& .MuiSwitch-thumb": {
+                                                        backgroundColor: colorization
+                                                            ? purpleColor
+                                                            : grayColor,
+                                                    },
+                                                    "& .MuiSwitch-track": {
+                                                        backgroundColor: colorization
+                                                            ? purpleColor
+                                                            : grayTrackColor,
+                                                    },
+                                                }}
+                                            />
+                                        }
+                                        label={
+                                            <Box display="flex" alignItems="center" gap={1}>
+                                                <ColorLensIcon />
+                                                Colorize (if grayscale)
+                                            </Box>
+                                        }
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={textEnhancement}
+                                                onChange={(e) =>
+                                                    setTextEnhancement(e.target.checked)
+                                                }
+                                                sx={{
+                                                    "& .MuiSwitch-thumb": {
+                                                        backgroundColor: textEnhancement
+                                                            ? purpleColor
+                                                            : grayColor,
+                                                    },
+                                                    "& .MuiSwitch-track": {
+                                                        backgroundColor: textEnhancement
+                                                            ? purpleColor
+                                                            : grayTrackColor,
+                                                    },
+                                                }}
+                                            />
+                                        }
+                                        label={
+                                            <Box display="flex" alignItems="center" gap={1}>
+                                                <TextFieldsIcon />
+                                                Text
+                                            </Box>
+                                        }
+                                    />
+                                </Box>
+                            </Grid>
+                        </Grid>
+                        <Button
+                            variant="contained"
                             sx={{
-                                height: 200,
-                                width: "100%",
-                                borderRadius: 2,
-                                objectFit: "cover",
-                            }}
-                        />
-                        <IconButton
-                            onClick={removeImage}
-                            sx={{
-                                position: "absolute",
-                                top: 8,
-                                right: 8,
-                                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                marginTop: 3,
+                                backgroundColor: purpleColor,
                                 color: "#FFFFFF",
                                 "&:hover": {
-                                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                                    backgroundColor: "#3700B3",
                                 },
                             }}
+                            onClick={enhanceImage}
                         >
-                            <CloseIcon />
-                        </IconButton>
-                    </Box>
-                )}
-                {selectedFile && (
-                    <Typography variant="body2" color="text.secondary" sx={{ marginTop: 2 }}>
-                        Selected File: {selectedFile.name}
-                    </Typography>
-                )}
-                {!isUploaded && !errorMessage && (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                            marginTop: 3,
-                            backgroundColor: "#FF00FF",
-                            color: "#FFFFFF",
-                            "&:hover": {
-                                backgroundColor: "#D000D0",
-                            },
-                        }}
-                        onClick={uploadFile}
-                        disabled={!selectedFile || isUploading}
-                    >
-                        {isUploading ? "Uploading..." : "Upload"}
-                    </Button>
-                )}
-                {isUploaded && (
-                    <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                            marginTop: 2,
-                            fontStyle: "italic",
-                        }}
-                    >
-                        File uploaded successfully!
-                    </Typography>
+                            Enhance <AutoFixHighIcon sx={{ marginLeft: 1 }} />
+                        </Button>
+                    </>
                 )}
                 {errorMessage && (
                     <Typography

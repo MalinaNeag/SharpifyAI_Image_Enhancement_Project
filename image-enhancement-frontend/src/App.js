@@ -14,21 +14,23 @@ const App = () => {
         localStorage.setItem("darkMode", darkMode);
     }, [darkMode]);
 
+    const purpleLight = "#6200EE"; // Standard Purple
+    const purpleBright = "#8C3FFD"; // Brighter Purple for Dark Mode
+
     const theme = createTheme({
         palette: {
             mode: darkMode ? "dark" : "light",
             primary: {
-                main: "#FF00FF", // Magenta as the accent color
+                main: darkMode ? purpleBright : purpleLight,
             },
             background: {
                 default: darkMode ? "#1E1E1E" : "#F7F7F7", // Neutral tones
                 paper: darkMode ? "#2A2A2A" : "#FFFFFF", // Card backgrounds
             },
             text: {
-                primary: darkMode ? "#E0E0E0" : "#000000", // High contrast for readability
-                secondary: darkMode ? "#B0B0B0" : "#555555", // Subtle text
+                primary: darkMode ? "#FFFFFF" : "#000000", // High contrast for readability
+                secondary: darkMode ? "#CFCFCF" : "#555555", // Subtle text
             },
-
         },
         typography: {
             fontFamily: [
@@ -60,7 +62,7 @@ const App = () => {
                 position="sticky"
                 sx={{
                     backgroundColor: darkMode ? "#2A2A2A" : "#FFFFFF",
-                    color: darkMode ? "#FF00FF" : "#000000", // Neutral with magenta accent
+                    color: darkMode ? purpleBright : "#000000", // Purple in dark mode
                     boxShadow: "none", // No shadow for minimalism
                     borderBottom: darkMode ? "1px solid #444" : "1px solid #E0E0E0",
                 }}
