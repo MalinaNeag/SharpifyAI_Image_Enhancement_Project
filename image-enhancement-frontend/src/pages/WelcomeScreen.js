@@ -1,9 +1,9 @@
 import React from "react";
-import { Container, Box, Button, Grid, Card, CardContent, Typography } from "@mui/material";
+import { Container, Box, Grid, Card, CardContent, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useTheme } from "@mui/material/styles";
+import ButtonComponent from "../components/ButtonComponent"; // Custom reusable button
 
 // Feature list
 const features = [
@@ -45,32 +45,6 @@ const WelcomeScreen = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                background: darkMode
-                    ? `linear-gradient(to bottom, 
-                        #1C1C1E 10%, 
-                        rgba(30, 30, 30, 0.9) 40%, 
-                        rgba(45, 45, 45, 0.85) 55%, 
-                        rgba(60, 60, 60, 0.7) 70%, 
-                        transparent 80%
-                    ), 
-                    linear-gradient(to right, 
-                        #2D2D30 0%, 
-                        #3E3E42 33%, 
-                        #545454 66%, 
-                        #6C6C70 100%)`
-                    : `linear-gradient(to bottom, 
-                        #FFFFFF 20%, 
-                        rgba(255, 255, 255, 0.95) 40%,
-                        rgba(255, 255, 255, 0.85) 55%, 
-                        rgba(255, 255, 255, 0.6) 70%, 
-                        transparent 80%
-                    ), 
-                    linear-gradient(to right, 
-                        #E3F2FD 0%, 
-                        #E0F7FA 33%, 
-                        #FFF9C4 66%, 
-                        #FCE4EC 100%)`,
-                backgroundSize: "100% 100%",
                 overflow: "hidden",
                 paddingX: { xs: 0.5, sm: 2, md: 3 },
                 paddingTop: { xs: 2, sm: 4, md: 6 },
@@ -121,22 +95,7 @@ const WelcomeScreen = () => {
                                         <Typography variant="body2" sx={{ color: darkMode ? "#BBB" : "#666" }}>
                                             {feature.description}
                                         </Typography>
-                                        <Button
-                                            endIcon={<ArrowForwardIosIcon />}
-                                            sx={{
-                                                marginTop: 1,
-                                                background: darkMode ? "#2C2C2E" : "#FFFFFF",
-                                                color: darkMode ? "#F5F5F5" : "#000",
-                                                transition: "0.3s",
-                                                "&:hover": {
-                                                    background: "linear-gradient(135deg, #1DE9B6, #1DC4E9)",
-                                                    color: "#fff",
-                                                    transform: "scale(1.05)",
-                                                },
-                                            }}
-                                        >
-                                            Start
-                                        </Button>
+                                        <ButtonComponent onClick={() => navigate(feature.link)}>Start</ButtonComponent>
                                     </CardContent>
                                 </Card>
                             </motion.div>
@@ -144,9 +103,8 @@ const WelcomeScreen = () => {
                     ))}
                 </Grid>
 
-                {/* CTA Section */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
-                    <Typography variant="h5" fontWeight={600} mt={6} sx={{ color: darkMode ? "#F5F5F5" : "#000" }}>
+                <Box sx={{ marginTop: { xs: 5, sm: 6 }, textAlign: "center" }}>
+                    <Typography variant="h5" fontWeight={600} sx={{ color: darkMode ? "#F5F5F5" : "#000" }}>
                         Enhance image quality with one click
                     </Typography>
                     <Button
@@ -157,6 +115,7 @@ const WelcomeScreen = () => {
                             color: "#fff",
                             marginTop: 3,
                             padding: "10px 40px",
+                            borderRadius: "20px",
                             fontSize: "16px",
                             "&:hover": {
                                 background: "linear-gradient(135deg, #1DC4E9, #1DE9B6)",
@@ -167,7 +126,7 @@ const WelcomeScreen = () => {
                     >
                         GET STARTED
                     </Button>
-                </motion.div>
+                </Box>
             </Container>
         </Box>
     );

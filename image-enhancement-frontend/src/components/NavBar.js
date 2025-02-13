@@ -2,34 +2,42 @@ import React, { useState } from "react";
 import { AppBar, Toolbar, Typography, IconButton, Box } from "@mui/material";
 import { Brightness4, LightMode, AccountCircle, Menu as MenuIcon, Layers, NightsStay } from "@mui/icons-material";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const NavBar = ({ darkMode, setDarkMode }) => {
     const [credits, setCredits] = useState(3); // Hardcoded credits; TO BE MODIFIED
+    const navigate = useNavigate(); // Get the navigate function
+
+    const handleTitleClick = () => {
+        navigate("/"); // Redirect to home when clicking title
+    };
 
     return (
         <AppBar
             position="fixed"
             sx={{
                 background: darkMode ? "rgba(15, 15, 15, 0.35)" : "rgba(255, 255, 255, 0.35)",
-                backdropFilter: "blur(6px)", // Softer blur effect
+                backdropFilter: "blur(6px)",
                 boxShadow: "none",
                 transition: "background 0.3s ease-in-out",
-                height: "50px", // Reduced height
+                height: "50px",
                 display: "flex",
                 justifyContent: "center",
             }}
         >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between", px: { xs: 2, sm: 4, md: 6 }, minHeight: "50px" }}>
 
-                {/* App Name / Logo */}
+                {/* App Name / Logo - Clickable */}
                 <Typography
                     variant="h6"
+                    onClick={handleTitleClick} // Click event triggers navigation
                     sx={{
                         fontWeight: 700,
-                        fontSize: "18px", // Slightly smaller font
+                        fontSize: "18px",
                         color: darkMode ? "#F5F5F5" : "#000000",
                         letterSpacing: "0.5px",
                         cursor: "pointer",
+                        "&:hover": { textDecoration: "underline" }, // Optional hover effect
                     }}
                 >
                     Image Enhancer
@@ -37,8 +45,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
 
                 {/* Right Section: Credits | Profile | Dark Mode */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-
-                    {/* Credits - Pill Design */}
+                    {/* Credits */}
                     <Box
                         sx={{
                             display: "flex",
@@ -58,7 +65,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                         </Typography>
                     </Box>
 
-                    {/* Profile - Pill Design */}
+                    {/* Profile */}
                     <Box
                         sx={{
                             display: "flex",
@@ -75,7 +82,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                         <AccountCircle sx={{ fontSize: 20, color: darkMode ? "#F5F5F5" : "#000" }} />
                     </Box>
 
-                    {/* Dark Mode Toggle - Pill Style */}
+                    {/* Dark Mode Toggle */}
                     <Box
                         onClick={() => setDarkMode(!darkMode)}
                         sx={{

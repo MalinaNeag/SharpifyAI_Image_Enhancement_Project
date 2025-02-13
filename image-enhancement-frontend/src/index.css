@@ -1,42 +1,51 @@
+/* Reset default margins & set global font */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
 
+/* Remove unnecessary root variables (handled by MUI theme) */
 :root {
-  --background-color: #F5F5F7;
   --text-color: #000000;
 }
 
 [data-theme="dark"] {
-  --background-color: #1C1C1E;
   --text-color: #FFFFFF;
 }
 
-/* Add responsive styles */
+/* Global app layout */
 .App {
   text-align: center;
-  padding: 0 16px; /* Ensure padding for smaller screens */
+  padding: 0 16px; /* Padding for smaller screens */
 }
 
-.App-header {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* Improve text readability */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  margin: 0;
 }
 
+p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Responsive font scaling */
 @media (max-width: 768px) {
-  .App-header {
-    font-size: calc(8px + 2vmin); /* Slightly smaller font for smaller screens */
+  .App {
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .App-header {
-    font-size: calc(6px + 2vmin); /* Adjust further for very small screens */
+  .App {
+    font-size: 12px;
   }
+}
+
+/* Remove unnecessary React default styles */
+.App-header,
+.App-logo,
+.App-link {
+  display: none; /* No longer needed */
 }
