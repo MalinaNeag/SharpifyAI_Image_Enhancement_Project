@@ -1,9 +1,9 @@
 import React from "react";
-import { Container, Box, Button, Grid, Card, CardContent, Typography } from "@mui/material";
+import { Container, Box, Grid, Card, CardContent, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useTheme } from "@mui/material/styles";
+import ButtonComponent from "../components/ButtonComponent"; // Custom reusable button
 
 // Feature list
 const features = [
@@ -121,22 +121,7 @@ const WelcomeScreen = () => {
                                         <Typography variant="body2" sx={{ color: darkMode ? "#BBB" : "#666" }}>
                                             {feature.description}
                                         </Typography>
-                                        <Button
-                                            endIcon={<ArrowForwardIosIcon />}
-                                            sx={{
-                                                marginTop: 1,
-                                                background: darkMode ? "#2C2C2E" : "#FFFFFF",
-                                                color: darkMode ? "#F5F5F5" : "#000",
-                                                transition: "0.3s",
-                                                "&:hover": {
-                                                    background: "linear-gradient(135deg, #1DE9B6, #1DC4E9)",
-                                                    color: "#fff",
-                                                    transform: "scale(1.05)",
-                                                },
-                                            }}
-                                        >
-                                            Start
-                                        </Button>
+                                        <ButtonComponent onClick={() => navigate(feature.link)}>Start</ButtonComponent>
                                     </CardContent>
                                 </Card>
                             </motion.div>
@@ -144,9 +129,8 @@ const WelcomeScreen = () => {
                     ))}
                 </Grid>
 
-                {/* CTA Section */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
-                    <Typography variant="h5" fontWeight={600} mt={6} sx={{ color: darkMode ? "#F5F5F5" : "#000" }}>
+                <Box sx={{ marginTop: { xs: 5, sm: 6 }, textAlign: "center" }}>
+                    <Typography variant="h5" fontWeight={600} sx={{ color: darkMode ? "#F5F5F5" : "#000" }}>
                         Enhance image quality with one click
                     </Typography>
                     <Button
@@ -157,6 +141,7 @@ const WelcomeScreen = () => {
                             color: "#fff",
                             marginTop: 3,
                             padding: "10px 40px",
+                            borderRadius: "20px",
                             fontSize: "16px",
                             "&:hover": {
                                 background: "linear-gradient(135deg, #1DC4E9, #1DE9B6)",
@@ -167,7 +152,7 @@ const WelcomeScreen = () => {
                     >
                         GET STARTED
                     </Button>
-                </motion.div>
+                </Box>
             </Container>
         </Box>
     );

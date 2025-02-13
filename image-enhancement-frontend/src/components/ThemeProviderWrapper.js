@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
+import { Box } from "@mui/material";
 
 const ThemeProviderWrapper = ({ children }) => {
     const [darkMode, setDarkMode] = useState(() => {
@@ -11,13 +12,10 @@ const ThemeProviderWrapper = ({ children }) => {
         localStorage.setItem("darkMode", darkMode);
     }, [darkMode]);
 
-    const purpleLight = "#6200EE";
-    const purpleBright = "#8C3FFD";
-
     const theme = createTheme({
         palette: {
             mode: darkMode ? "dark" : "light",
-            primary: { main: darkMode ? purpleBright : purpleLight },
+            primary: { main: darkMode ? "#8C3FFD" : "#6200EE" },
             background: {
                 default: darkMode ? "#1E1E1E" : "#F7F7F7",
                 paper: darkMode ? "#2A2A2A" : "#FFFFFF",
@@ -27,18 +25,22 @@ const ThemeProviderWrapper = ({ children }) => {
                 secondary: darkMode ? "#CFCFCF" : "#555555",
             },
         },
-        typography: {
-            fontFamily: ["-apple-system", "BlinkMacSystemFont", "Roboto", "Arial"].join(","),
-            h4: { fontWeight: 600 },
-            body1: { fontWeight: 400, lineHeight: 1.6 },
-        },
-        shape: { borderRadius: 12 },
     });
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            {children(darkMode, setDarkMode)}
+            <Box
+                sx={{
+                    minHeight: "100vh",
+                    background: darkMode
+                        ? `linear-gradient(to bottom, #1C1C1E 10%, rgba(30, 30, 30, 0.9) 40%)`
+                        : `linear-gradient(to bottom, #FFFFFF 20%, rgba(255, 255, 255, 0.95) 40%)`,
+                    backgroundSize: "100% 100%",
+                }}
+            >
+                {children(darkMode, setDarkMode)}
+            </Box>
         </ThemeProvider>
     );
 };
