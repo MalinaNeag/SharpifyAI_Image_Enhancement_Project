@@ -212,23 +212,35 @@ const SubscriptionModal = ({ open, onClose }) => {
                                                 {option.plan}
                                             </Typography>
 
-                                            <Typography
-                                                variant="h5"
-                                                fontWeight={700}
-                                                sx={{
-                                                    color: "#2E7D32",
-                                                    display: "flex",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                    gap: "8px",
-                                                }}
-                                            >
+                                            <Box>
                                                 {option.plan === "Pro" ? (
-                                                    <>
-                                                        <span style={{ fontSize: "28px" }}>$19.99</span>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center", // Center green price
+                                                            position: "relative", // Absolute positioning for grey price
+                                                            width: "100%",
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            variant="h5"
+                                                            fontWeight={700}
+                                                            sx={{
+                                                                color: "#4CAF50",
+                                                                fontSize: "28px",
+                                                                textAlign: "center",
+                                                                flexGrow: 1,
+                                                            }}
+                                                        >
+                                                            $19.99
+                                                        </Typography>
+
                                                         <Typography
                                                             component="span"
                                                             sx={{
+                                                                position: "absolute",
+                                                                right: 10,
                                                                 fontSize: "18px",
                                                                 color: "#808080",
                                                                 textDecoration: "line-through",
@@ -237,27 +249,43 @@ const SubscriptionModal = ({ open, onClose }) => {
                                                         >
                                                             $39.99
                                                         </Typography>
-                                                    </>
+                                                    </Box>
                                                 ) : (
-                                                    option.price
+                                                    <Typography
+                                                        variant="h5"
+                                                        fontWeight={700}
+                                                        sx={{
+                                                            color: "#4CAF50",
+                                                            textAlign: "center",
+                                                        }}
+                                                    >
+                                                        {option.price}
+                                                    </Typography>
                                                 )}
-                                            </Typography>
+                                            </Box>
 
                                             <Divider sx={{ my: 1, bgcolor: "#4CAF50" }} />
 
-                                            <Typography
-                                                variant="body2"
+                                            <Box
                                                 sx={{
-                                                    color: theme.palette.text.primary,
-                                                    fontWeight: 500,
-                                                    wordWrap: "break-word",
-                                                    textAlign: "center",
-                                                    overflowWrap: "break-word",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center", // Center horizontally
+                                                    gap: "6px", // Space between icon and text
                                                 }}
                                             >
-                                                <Layers sx={{ fontSize: 16, mr: 0.5, color: "#F5B400" }} />
-                                                {option.credits}
-                                            </Typography>
+                                                <Layers sx={{ fontSize: 18, color: "#F5B400" }} />
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: theme.palette.text.primary,
+                                                        fontWeight: 500,
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    {option.credits}
+                                                </Typography>
+                                            </Box>
                                         </Box>
 
                                         <Box
