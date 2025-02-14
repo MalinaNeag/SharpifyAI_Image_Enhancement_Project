@@ -1,13 +1,39 @@
-# Frontend
-/image-enhancement-frontend/node_modules/
-image-enhancement-frontend/build/
+# === BACKEND ===
+image-enhancement-backend/uploads/
+image-enhancement-backend/flask_session/
+image-enhancement-backend/__pycache__/
+image-enhancement-backend/venv/
+image-enhancement-backend/*.pyc
+image-enhancement-backend/backend.log
 
-# Backend
-/image-enhancement-backend/uploads/
-/image-enhancement-backend/__pycache__/
+# Ignore compiled Python files
 *.pyc
+*.pyo
+*.pyd
 
-# macOS
-.DS_Store
+# Ignore VSCode settings
+.vscode/
 
+# Ignore JetBrains IDEs (PyCharm, WebStorm, etc.)
+.idea/
+*.iml
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore virtual environments
+venv/
+env/
+venv*/
+ENV/
+
+# Ignore environment variables
 .env
+.env.local
+.env.development
+.env.production
+
+# Ignore macOS system files
+.DS_Store
+Thumbs.db
