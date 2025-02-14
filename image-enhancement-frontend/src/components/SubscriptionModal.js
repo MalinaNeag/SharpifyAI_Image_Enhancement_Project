@@ -9,46 +9,47 @@ const plans = [
     {
         plan: "Basic",
         price: "$5.99",
-        credits: "90 credits",
+        credits: "100 credits",
         features: [
-            "Enhance 9 photos",
-            "Full access to Modular Pipeline",
-            "Face, Background, Text Enhancement",
-            "Colorization Included"
+            "Enhance 10 photos",
+            "Full photo enhancement: face, background, text",
         ],
-        tag: "Best for Casual Use",
+        tag: "Casual Use",
         tagColor: "#FFF",
         tagBg: "#FF6F61",
-        buttonText: "Get 90 Credits"
+        buttonText: "Basic Plan"
     },
     {
         plan: "Plus",
         price: "$9.99",
-        credits: "90 credits",
+        credits: "200 credits",
         features: [
-            "Enhance 9 photos",
-            "Full access to Modular Pipeline",
-            "History Access",
-            "Enhancement based on Gallery"
+            "Enhance 20 photos",
+            "Full photo enhancement: face, background, text",
+            "Gallery access: download your resulted photo anytime you want",
+            "Photo colorization and restauration"
         ],
-        tag: "Smart AI Features",
+        tag: "Smart Features",
         tagColor: "#FFF",
         tagBg: "#FF9800",
-        buttonText: "Unlock Plus"
+        buttonText: "Plus Plan"
     },
     {
         plan: "Pro",
         price: "$49.99",
-        credits: "900 credits",
+        credits: "500 credits",
         features: [
-            "Enhance 90 photos",
-            "Full access to Modular Pipeline",
-            "History Access",
-            "Priority Processing"
+            "Enhance 50 photos",
+            "Full photo enhancement, colorization and restauration access",
+            "Gallery access",
+            "Personalized AI Enhancement based on gallery",
+            "Face recognition & swap",
         ],
+        tag: "More Features",
         discount: "Best Value",
-        buttonText: "Go Pro"
+        buttonText: "Pro Plan"
     }
+
 ];
 
 const SubscriptionModal = ({ open, onClose }) => {
@@ -143,8 +144,8 @@ const SubscriptionModal = ({ open, onClose }) => {
                             }}
                         >
                             <motion.div
-                                whileHover={isMobile ? {} : { scale: 1 }}
-                                transition={{ duration: 0.3 }}
+                                whileHover={isMobile ? {} : { scale: 1.01 }}
+                                transition={{ duration: 0.4 }}
                             >
                                 <Card
                                     sx={{
@@ -155,6 +156,9 @@ const SubscriptionModal = ({ open, onClose }) => {
                                         flexDirection: "column",
                                         height: "100%",
                                         minHeight: "440px",
+                                        width: "100%", // ✅ Forces the same width for all cards
+                                        maxWidth: "350px", // ✅ Prevents width from shrinking too much
+                                        textAlign: "center",
                                         boxShadow: theme.palette.mode === "dark"
                                             ? "0 6px 20px rgba(0, 0, 0, 0.5)"
                                             : "0 6px 20px rgba(0, 0, 0, 0.1)",
