@@ -142,7 +142,10 @@ const SubscriptionModal = ({ open, onClose }) => {
                                 display: "inline-block",
                             }}
                         >
-                            <motion.div whileHover={{ scale: 1.05 }}>
+                            <motion.div
+                                whileHover={isMobile ? {} : { scale: 1 }}
+                                transition={{ duration: 0.3 }}
+                            >
                                 <Card
                                     sx={{
                                         borderRadius: "18px",
@@ -156,9 +159,13 @@ const SubscriptionModal = ({ open, onClose }) => {
                                             ? "0 6px 20px rgba(0, 0, 0, 0.5)"
                                             : "0 6px 20px rgba(0, 0, 0, 0.1)",
                                         transition: "0.3s ease-in-out",
-                                        backgroundColor: theme.palette.mode === "dark" ? "#333333" : "#FFFFFF",
+                                        backgroundColor: theme.palette.mode === "dark"
+                                            ? "rgba(255,255,255,0.15)"
+                                            : "rgba(255,255,255,0.6)",
                                         "&:hover": {
-                                            transform: "scale(1.03)",
+                                            backgroundColor: theme.palette.mode === "dark"
+                                                ? "rgba(255,255,255,0.25)"
+                                                : "rgba(255,255,255,0.9)",
                                         },
                                     }}
                                 >
