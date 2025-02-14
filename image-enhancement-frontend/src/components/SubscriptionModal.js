@@ -3,52 +3,53 @@ import { Box, Modal, Typography, IconButton, Card, CardContent, Divider, useMedi
 import { Close, CheckCircle, Layers } from "@mui/icons-material";
 import { useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import ButtonComponent from "../components/ButtonComponent"; // Custom reusable button
+import GreenButton from "./GreenButton";
+import GoldButton from "./GoldButton";
 
 const plans = [
     {
         plan: "Basic",
         price: "$5.99",
-        credits: "90 credits",
+        credits: "100 credits",
         features: [
-            "Enhance 9 photos",
-            "Full access to Modular Pipeline",
-            "Face, Background, Text Enhancement",
-            "Colorization Included"
+            "Enhance 10 photos",
+            "Full photo enhancement: face, background, text",
         ],
-        tag: "Best for Casual Use",
+        tag: "Casual Use",
         tagColor: "#FFF",
         tagBg: "#FF6F61",
-        buttonText: "Get 90 Credits"
+        buttonText: "Basic Plan"
     },
     {
         plan: "Plus",
         price: "$9.99",
-        credits: "90 credits",
+        credits: "200 credits",
         features: [
-            "Enhance 9 photos",
-            "Full access to Modular Pipeline",
-            "History Access",
-            "Enhancement based on Gallery"
+            "Enhance 20 photos",
+            "Full photo enhancement: face, background, text",
+            "Gallery access: download your resulted photo anytime you want",
+            "Photo colorization and restauration"
         ],
-        tag: "Smart AI Features",
+        tag: "Smart Features",
         tagColor: "#FFF",
         tagBg: "#FF9800",
-        buttonText: "Unlock Plus"
+        buttonText: "Plus Plan"
     },
     {
         plan: "Pro",
-        price: "$49.99",
-        credits: "900 credits",
+        price: "$19.99",
+        credits: "500 credits",
         features: [
-            "Enhance 90 photos",
-            "Full access to Modular Pipeline",
-            "History Access",
-            "Priority Processing"
+            "Enhance 50 photos",
+            "Gallery access",
+            "Personalized AI Enhancement based on gallery",
+            "Face recognition & swap",
         ],
+        tag: "More Features",
         discount: "Best Value",
-        buttonText: "Go Pro"
+        buttonText: "Pro Plan"
     }
+
 ];
 
 const SubscriptionModal = ({ open, onClose }) => {
@@ -70,10 +71,8 @@ const SubscriptionModal = ({ open, onClose }) => {
                     background: theme.palette.mode === "dark"
                         ? "#1C1C1E" // Solid dark background—no transparency
                         : "linear-gradient(90deg, #FFDDE4, #CDECF9, #DCCAFF, #FFC9B8, #FFF8CC, #CDEECF)", // Light mode with pastel colors
+                    animation: "bgMove 20s infinite alternate ease-in-out",
                     backgroundSize: theme.palette.mode === "dark" ? "auto" : "400% 400%",
-                    animation: theme.palette.mode === "dark"
-                        ? "none"
-                        : "bgMove 20s infinite alternate ease-in-out", // Animation only for light mode
                     color: theme.palette.mode === "dark" ? "#FFFFFF" : "#000000", // White text in dark mode
                     "@keyframes bgMove": {
                         "0%": { backgroundPosition: "0% 50%" },
@@ -110,8 +109,8 @@ const SubscriptionModal = ({ open, onClose }) => {
                     fontWeight={700}
                     sx={{
                         color: theme.palette.text.primary,
-                        mt: { xs: 2, md: 6 },  // Ensure proper spacing at the top
-                        mb: { xs: 4, md: 5 },  // Adjust bottom spacing for consistency
+                        mt: { xs: 2, md: 6 },
+                        mb: { xs: 4, md: 5 },
                         textAlign: "center",
                         fontFamily: 'Roboto, sans-serif',
                     }}
@@ -123,7 +122,7 @@ const SubscriptionModal = ({ open, onClose }) => {
                 <Box
                     sx={{
                         display: "flex",
-                        flexDirection: isMobile ? "row" : "row",
+                        flexDirection : "row",
                         gap: 2,
                         overflowX: isMobile ? "auto" : "hidden",
                         width: "100%",
@@ -142,9 +141,13 @@ const SubscriptionModal = ({ open, onClose }) => {
                                 display: "inline-block",
                             }}
                         >
-                            <motion.div whileHover={{ scale: 1.05 }}>
+                            <motion.div
+                                whileHover={isMobile ? {} : { scale: 1.01 }}
+                                transition={{ duration: 0.4 }}
+                            >
                                 <Card
                                     sx={{
+                                        position: "relative",
                                         borderRadius: "18px",
                                         overflow: "hidden",
                                         cursor: "pointer",
@@ -152,68 +155,151 @@ const SubscriptionModal = ({ open, onClose }) => {
                                         flexDirection: "column",
                                         height: "100%",
                                         minHeight: "440px",
+                                        width: "100%",
+                                        maxWidth: "350px",
+                                        textAlign: "center",
+                                        transition: "0.3s ease-in-out",
+                                        backgroundColor: theme.palette.mode === "dark"
+                                            ? "rgba(255,255,255,0.15)"
+                                            : "rgba(255,255,255,0.6)",
                                         boxShadow: theme.palette.mode === "dark"
                                             ? "0 6px 20px rgba(0, 0, 0, 0.5)"
                                             : "0 6px 20px rgba(0, 0, 0, 0.1)",
-                                        transition: "0.3s ease-in-out",
-                                        backgroundColor: theme.palette.mode === "dark" ? "#333333" : "#FFFFFF",
                                         "&:hover": {
-                                            transform: "scale(1.03)",
+                                            backgroundColor: theme.palette.mode === "dark"
+                                                ? "rgba(255,255,255,0.25)"
+                                                : "rgba(255,255,255,0.9)",
+                                            transform: "scale(1)",
                                         },
+                                        ...(option.plan === "Pro" && {
+                                            border: "3px solid #FF8C00",
+                                            boxShadow: "0px 0px 12px rgba(255, 140, 0, 0.5)",
+                                        }),
                                     }}
                                 >
-                                    <CardContent sx={{ padding: 3, display: "flex", flexDirection: "column", flexGrow: 1 }}>
-                                        {/* Discount Tag */}
-                                        {option.discount && (
-                                            <Box
-                                                sx={{
-                                                    position: "absolute",
-                                                    top: 10,
-                                                    right: 10,
-                                                    backgroundColor: "#FF4081",
-                                                    color: "#FFF",
-                                                    fontSize: "10px",
-                                                    fontWeight: "bold",
-                                                    px: 1.5,
-                                                    py: 0.5,
-                                                    borderRadius: "10px",
-                                                    zIndex: 1,
-                                                }}
-                                            >
-                                                {option.discount}
-                                            </Box>
-                                        )}
-
-                                        {/* Plan Name */}
-                                        <Typography variant="h6" fontWeight={700} sx={{ mb: 1, color: theme.palette.text.primary }}>
-                                            {option.plan}
-                                        </Typography>
-
-                                        {/* Price */}
-                                        <Typography
-                                            variant="h5"
-                                            fontWeight={700}
+                                    {option.plan === "Pro" && (
+                                        <Box
                                             sx={{
-                                                color: "#4CAF50",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center"
+                                                position: "absolute",
+                                                top: 0,
+                                                right: 0,
+                                                background: "linear-gradient(90deg, #FF8C00, #FFD700)",
+                                                color: "#FFF",
+                                                fontSize: "14px",
+                                                fontWeight: "bold",
+                                                padding: "6px 14px",
+                                                borderRadius: "0 8px 0 8px",
+                                                boxShadow: "0px 4px 10px rgba(0,0,0,0.2)",
+                                                zIndex: 10,
                                             }}
                                         >
-                                            {option.price}
-                                        </Typography>
+                                            Best Value
+                                        </Box>
+                                    )}
+                                    <CardContent
+                                        sx={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            flexGrow: 1,
+                                            padding: 3,
+                                            textAlign: "center",
+                                            justifyContent: "space-between",
+                                        }}
+                                    >
+                                        {/* Top Section - Plan Name & Price */}
+                                        <Box>
+                                            <Typography variant="h6" fontWeight={700} sx={{ mb: 1, color: theme.palette.text.primary }}>
+                                                {option.plan}
+                                            </Typography>
 
-                                        {/* Divider */}
-                                        <Divider sx={{ my: 1, bgcolor: "#4CAF50" }} />
+                                            <Box>
+                                                {option.plan === "Pro" ? (
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center", // Center green price
+                                                            position: "relative", // Absolute positioning for grey price
+                                                            width: "100%",
+                                                        }}
+                                                    >
+                                                        <Typography
+                                                            variant="h5"
+                                                            fontWeight={700}
+                                                            sx={{
+                                                                color: "#4CAF50",
+                                                                fontSize: "28px",
+                                                                textAlign: "center",
+                                                                flexGrow: 1,
+                                                            }}
+                                                        >
+                                                            $19.99
+                                                        </Typography>
 
-                                        {/* Credits Info */}
-                                        <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontWeight: 500 }}>
-                                            <Layers sx={{ fontSize: 16, mr: 0.5, color: "#F5B400" }} />
-                                            {option.credits}
-                                        </Typography>
+                                                        <Typography
+                                                            component="span"
+                                                            sx={{
+                                                                position: "absolute",
+                                                                right: 10,
+                                                                fontSize: "18px",
+                                                                color: "#808080",
+                                                                textDecoration: "line-through",
+                                                                opacity: 0.7,
+                                                            }}
+                                                        >
+                                                            $39.99
+                                                        </Typography>
+                                                    </Box>
+                                                ) : (
+                                                    <Typography
+                                                        variant="h5"
+                                                        fontWeight={700}
+                                                        sx={{
+                                                            color: "#4CAF50",
+                                                            textAlign: "center",
+                                                        }}
+                                                    >
+                                                        {option.price}
+                                                    </Typography>
+                                                )}
+                                            </Box>
 
-                                        {/* Features List */}
-                                        <Box sx={{ mt: 1, textAlign: "left", px: 2 }}>
+                                            <Divider sx={{ my: 1, bgcolor: "#4CAF50" }} />
+
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center", // Center horizontally
+                                                    gap: "6px", // Space between icon and text
+                                                }}
+                                            >
+                                                <Layers sx={{ fontSize: 18, color: "#F5B400" }} />
+                                                <Typography
+                                                    variant="body2"
+                                                    sx={{
+                                                        color: theme.palette.text.primary,
+                                                        fontWeight: 500,
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    {option.credits}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+
+                                        <Box
+                                            sx={{
+                                                flexGrow: 1,
+                                                textAlign: "left",
+                                                px: 2,
+                                                mt: 2,
+                                                minHeight: "150px",
+                                                wordBreak: "break-word",
+                                                overflowWrap: "break-word",
+                                                whiteSpace: "normal",
+                                            }}
+                                        >
                                             {option.features.map((feature, i) => (
                                                 <Typography
                                                     key={i}
@@ -232,20 +318,25 @@ const SubscriptionModal = ({ open, onClose }) => {
                                             ))}
                                         </Box>
 
-                                        {/* Subscribe Button */}
-                                        <ButtonComponent
+                                        <Box
                                             sx={{
-                                                mt: 2,
+                                                mt: "auto",
                                                 width: "100%",
-                                                background: "linear-gradient(90deg, #1DE9B6, #B2F7A7)",
-                                                color: "#000",
-                                                fontWeight: 600,
-                                                py: 1,
+                                                pb: 2,
+                                                display: "flex",
+                                                justifyContent: "center",
                                             }}
-                                            onClick={() => console.log("Subscribed to", option.plan)}
                                         >
-                                            {option.buttonText}
-                                        </ButtonComponent>
+                                            {option.plan === "Pro" ? (
+                                                <GoldButton onClick={() => console.log("Subscribed to", option.plan)}>
+                                                    {option.buttonText}
+                                                </GoldButton>
+                                            ) : (
+                                                <GreenButton onClick={() => console.log("Subscribed to", option.plan)}>
+                                                    {option.buttonText}
+                                                </GreenButton>
+                                            )}
+                                        </Box>
                                     </CardContent>
                                 </Card>
                             </motion.div>
