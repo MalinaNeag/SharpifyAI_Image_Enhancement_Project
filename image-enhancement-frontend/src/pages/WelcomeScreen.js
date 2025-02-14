@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTheme } from "@mui/material/styles";
 import ButtonComponent from "../components/ButtonComponent"; // Custom reusable button
+import ButtonGlowing from "../components/ButtonGlowing"; // Glowing button
 
 const features = [
     {
@@ -183,55 +184,11 @@ const WelcomeScreen = () => {
                     </Grid>
                 )}
 
-                <Box sx={{ marginTop: { xs: 4, sm: 6 }, textAlign: "center" }}>
-                    <Typography variant={isMobile ? "h6" : "h5"} fontWeight={600} sx={{ color: darkMode ? "#F5F5F5" : "#000" }}>
+                <Box sx={{ marginTop: { xs: 5, sm: 6 }, textAlign: "center" }}>
+                    <Typography variant="h5" fontWeight={600} sx={{ color: darkMode ? "#F5F5F5" : "#000" }}>
                         Enhance image quality with one click
                     </Typography>
-                    <Button
-                        variant="contained"
-                        size="large"
-                        sx={{
-                            background: "linear-gradient(135deg, #1DE9B6, #1DC4E9)",
-                            color: "#fff",
-                            marginTop: 3,
-                            padding: "12px 40px",
-                            borderRadius: "20px",
-                            fontSize: isMobile ? "14px" : "18px",
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            letterSpacing: "1px",
-                            boxShadow: "0 0 25px rgba(29, 233, 182, 0.9)",
-                            position: "relative",
-                            overflow: "hidden",
-                            animation: "pulseGlow 1.5s infinite alternate",
-                            "&::before": {
-                                content: '""',
-                                position: "absolute",
-                                top: 0,
-                                left: "-100%",
-                                width: "200%",
-                                height: "100%",
-                                background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%)",
-                                animation: "shimmer 1.2s infinite linear",
-                            },
-                            "@keyframes shimmer": {
-                                "0%": { left: "-100%" },
-                                "100%": { left: "100%" },
-                            },
-                            "@keyframes pulseGlow": {
-                                "0%": { boxShadow: "0 0 25px rgba(29, 233, 182, 0.9)" },
-                                "100%": { boxShadow: "0 0 40px rgba(29, 233, 182, 1.0)" },
-                            },
-                            "&:hover": {
-                                background: "linear-gradient(135deg, #1DC4E9, #1DE9B6)",
-                                transform: "scale(1.08)",
-                                boxShadow: "0 0 50px rgba(29, 233, 182, 1.2)",
-                            },
-                        }}
-                        onClick={() => navigate("/upload")}
-                    >
-                         GET STARTED
-                    </Button>
+                    <ButtonGlowing text="GET STARTED" onClick={() => navigate("/upload")} />
                 </Box>
             </Container>
         </Box>
