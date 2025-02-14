@@ -44,50 +44,30 @@ const ThemeProviderWrapper = ({ children }) => {
                     position: "relative",
                     overflow: "hidden",
                     background: darkMode
-                        ? `linear-gradient(to bottom, 
-                            #1C1C1E 10%, 
-                            rgba(30, 30, 30, 0.9) 40%, 
-                            rgba(45, 45, 45, 0.85) 55%, 
-                            rgba(60, 60, 60, 0.7) 70%, 
-                            transparent 80%
-                        ), 
-                        linear-gradient(to right, 
-                            #2D2D30 0%, 
-                            #3E3E42 33%, 
-                            #545454 66%, 
-                            #6C6C70 100%)`
-                        : `linear-gradient(to bottom, 
-                            #FFFFFF 5%,  
-                            rgba(255, 255, 255, 0.98) 15%,  
-                            rgba(255, 255, 255, 0.95) 30%,  
-                            rgba(255, 255, 255, 0.9) 45%,  
-                            rgba(255, 255, 255, 0.85) 60%,  
-                            rgba(255, 245, 180, 0.6) 75%,  
-                            rgba(250, 210, 255, 0.5) 85%,  
-                            rgba(230, 190, 255, 0.4) 100%
-                        )`,
-                    backgroundSize: "100% 100%",
+                        ? theme.palette.background.default // Solid dark background
+                        : `linear-gradient(90deg, #FFDDE4, #CDECF9, #DCCAFF, #FFC9B8, #FFF8CC, #CDEECF)`,
+                    backgroundSize: darkMode ? "auto" : "100% 100%",
                 }}
             >
-                {/* Light Mode Animated Gradient (No Slide Effect) */}
+                {/* Light Mode Animated Gradient (only rendered in light mode) */}
                 {!darkMode && (
                     <motion.div
                         initial={{ backgroundPosition: "0% 0%" }}
                         animate={{
                             backgroundPosition: ["0% 0%", "100% 100%", "50% 50%", "20% 80%"],
                         }}
-                        transition={{ duration: 50, repeat: Infinity, repeatType: "mirror", ease: "linear" }}
+                        transition={{
+                            duration: 50,
+                            repeat: Infinity,
+                            repeatType: "mirror",
+                            ease: "linear",
+                        }}
                         style={{
                             position: "absolute",
                             width: "100%",
                             height: "100%",
-                            background: `radial-gradient(circle at 30% 30%, 
-                                rgba(255, 140, 160, 0.5) 0%,  /* Pink */
-                                rgba(120, 200, 255, 0.4) 25%, /* Light Blue */
-                                rgba(100, 255, 190, 0.5) 50%,  /* Teal */
-                                rgba(255, 230, 150, 0.5) 75%, /* Soft Yellow */
-                                rgba(255, 240, 200, 0.4) 100% /* Peach */
-                            )`,
+                            background: "linear-gradient(90deg, #FFDDE4, #CDECF9, #DCCAFF, #FFC9B8, #FFF8CC, #CDEECF)",
+                            animation: "bgMove 50s infinite alternate ease-in-out",
                             backgroundSize: "400% 400%",
                             opacity: 0.8,
                         }}
@@ -95,7 +75,9 @@ const ThemeProviderWrapper = ({ children }) => {
                 )}
 
                 {/* Children Content */}
-                <Box sx={{ position: "relative", zIndex: 1 }}>{children(darkMode, setDarkMode)}</Box>
+                <Box sx={{ position: "relative", zIndex: 1 }}>
+                    {children(darkMode, setDarkMode)}
+                </Box>
             </Box>
         </ThemeProvider>
     );
