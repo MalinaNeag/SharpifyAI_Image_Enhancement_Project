@@ -98,17 +98,13 @@ const WelcomeScreen = () => {
                                             flexDirection: "column",
                                             height: "100%",
                                             boxShadow: darkMode
-                                                ? "0 6px 18px rgba(255, 255, 255, 0.05)"
-                                                : "0 6px 18px rgba(0,0,0,0.05)",
+                                                ? "0 6px 18px rgba(0, 0, 0, 0.2)" // Solid dark mode shadow
+                                                : "0 6px 18px rgba(0,0,0,0.05)", // Light mode shadow
                                             transition: "0.3s ease-in-out",
                                             backgroundColor: darkMode
-                                                ? "rgba(44, 44, 46, 0.55)" // More transparency
-                                                : "rgba(255, 255, 255, 0.55)", // More transparency
-                                            backdropFilter: "blur(15px)", // Stronger blur for readability
+                                                ? "#333333" // Solid dark background for cards in dark mode
+                                                : "#FFFFFF", // White background for cards in light mode
                                             "&:hover": {
-                                                backgroundColor: darkMode
-                                                    ? "rgba(44, 44, 46, 0.75)"
-                                                    : "rgba(255, 255, 255, 0.75)", // Less transparent on hover
                                                 transform: "scale(1.03)", // Lift effect
                                             },
                                         }}
@@ -160,17 +156,13 @@ const WelcomeScreen = () => {
                                             flexDirection: "column",
                                             height: "100%",
                                             boxShadow: darkMode
-                                                ? "0 6px 18px rgba(255, 255, 255, 0.05)"
-                                                : "0 6px 18px rgba(0,0,0,0.05)",
+                                                ? "0 6px 18px rgba(0, 0, 0, 0.2)" // Solid dark mode shadow
+                                                : "0 6px 18px rgba(0,0,0,0.05)", // Light mode shadow
                                             transition: "0.3s ease-in-out",
                                             backgroundColor: darkMode
-                                                ? "rgba(44, 44, 46, 0.55)" // More transparency
-                                                : "rgba(255, 255, 255, 0.55)", // More transparency
-                                            backdropFilter: "blur(15px)", // Stronger blur for readability
+                                                ? "#333333" // Solid dark background for cards in dark mode
+                                                : "#FFFFFF", // White background for cards in light mode
                                             "&:hover": {
-                                                backgroundColor: darkMode
-                                                    ? "rgba(44, 44, 46, 0.75)"
-                                                    : "rgba(255, 255, 255, 0.75)", // Less transparent on hover
                                                 transform: "scale(1.03)", // Lift effect
                                             },
                                         }}
