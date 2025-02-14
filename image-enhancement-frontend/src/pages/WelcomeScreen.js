@@ -156,14 +156,17 @@ const WelcomeScreen = () => {
                                             flexDirection: "column",
                                             height: "100%",
                                             boxShadow: darkMode
-                                                ? "0 6px 18px rgba(0, 0, 0, 0.2)" // Solid dark mode shadow
-                                                : "0 6px 18px rgba(0,0,0,0.05)", // Light mode shadow
+                                                ? "0 6px 18px rgba(0, 0, 0, 0.2)"
+                                                : "0 6px 18px rgba(0,0,0,0.05)",
                                             transition: "0.3s ease-in-out",
                                             backgroundColor: darkMode
-                                                ? "#333333" // Solid dark background for cards in dark mode
-                                                : "#FFFFFF", // White background for cards in light mode
+                                                ? "rgba(255, 255, 255, 0.15)"
+                                                : "rgba(255, 255, 255, 0.6)",
+
                                             "&:hover": {
-                                                transform: "scale(1.03)", // Lift effect
+                                                backgroundColor: darkMode
+                                                    ? "rgba(255, 255, 255, 0.25)"
+                                                    : "rgba(255, 255, 255, 0.8)",
                                             },
                                         }}
                                         onClick={() => navigate(feature.link)}
