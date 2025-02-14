@@ -47,7 +47,7 @@ const WelcomeScreen = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 overflow: "hidden",
-                paddingTop: { xs: 4, sm: 4, md: 6 },
+                paddingTop: { xs: 6, sm: 4, md: 6 }, // Increased top padding for mobile
             }}
         >
             {/* Main Section */}
@@ -77,6 +77,7 @@ const WelcomeScreen = () => {
                             gap: 2,
                             paddingLeft: 2, // Add space to the left of the first card
                             paddingRight: 2, // Add space to the right of the last card
+                            paddingTop: 1, // New padding added for better spacing
                         }}
                     >
                         {features.map((feature, index) => (
@@ -97,17 +98,26 @@ const WelcomeScreen = () => {
                                             flexDirection: "column",
                                             height: "100%",
                                             boxShadow: darkMode
-                                                ? "0 6px 18px rgba(255, 255, 255, 0.1)"
-                                                : "0 6px 18px rgba(0,0,0,0.1)",
+                                                ? "0 6px 18px rgba(255, 255, 255, 0.05)"
+                                                : "0 6px 18px rgba(0,0,0,0.05)",
                                             transition: "0.3s ease-in-out",
-                                            backgroundColor: darkMode ? "#2C2C2E" : "#FFF",
+                                            backgroundColor: darkMode
+                                                ? "rgba(44, 44, 46, 0.55)" // More transparency
+                                                : "rgba(255, 255, 255, 0.55)", // More transparency
+                                            backdropFilter: "blur(15px)", // Stronger blur for readability
+                                            "&:hover": {
+                                                backgroundColor: darkMode
+                                                    ? "rgba(44, 44, 46, 0.75)"
+                                                    : "rgba(255, 255, 255, 0.75)", // Less transparent on hover
+                                                transform: "scale(1.03)", // Lift effect
+                                            },
                                         }}
                                         onClick={() => navigate(feature.link)}
                                     >
                                         <Box
                                             sx={{
                                                 position: "relative",
-                                                height: 180, // Adjusted height for better fit
+                                                height: 180,
                                                 backgroundImage: `url(${feature.image})`,
                                                 backgroundSize: "cover",
                                                 backgroundPosition: "center",
@@ -150,10 +160,19 @@ const WelcomeScreen = () => {
                                             flexDirection: "column",
                                             height: "100%",
                                             boxShadow: darkMode
-                                                ? "0 6px 18px rgba(255, 255, 255, 0.1)"
-                                                : "0 6px 18px rgba(0,0,0,0.1)",
+                                                ? "0 6px 18px rgba(255, 255, 255, 0.05)"
+                                                : "0 6px 18px rgba(0,0,0,0.05)",
                                             transition: "0.3s ease-in-out",
-                                            backgroundColor: darkMode ? "#2C2C2E" : "#FFF",
+                                            backgroundColor: darkMode
+                                                ? "rgba(44, 44, 46, 0.55)" // More transparency
+                                                : "rgba(255, 255, 255, 0.55)", // More transparency
+                                            backdropFilter: "blur(15px)", // Stronger blur for readability
+                                            "&:hover": {
+                                                backgroundColor: darkMode
+                                                    ? "rgba(44, 44, 46, 0.75)"
+                                                    : "rgba(255, 255, 255, 0.75)", // Less transparent on hover
+                                                transform: "scale(1.03)", // Lift effect
+                                            },
                                         }}
                                         onClick={() => navigate(feature.link)}
                                     >
