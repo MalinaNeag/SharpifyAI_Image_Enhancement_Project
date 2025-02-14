@@ -76,7 +76,7 @@ const ThemeProviderWrapper = ({ children }) => {
                         animate={{
                             backgroundPosition: ["0% 0%", "100% 100%", "50% 50%", "20% 80%"],
                         }}
-                        transition={{ duration: 30, repeat: Infinity, repeatType: "mirror", ease: "linear" }}
+                        transition={{ duration: 50, repeat: Infinity, repeatType: "mirror", ease: "linear" }}
                         style={{
                             position: "absolute",
                             width: "100%",
@@ -89,7 +89,7 @@ const ThemeProviderWrapper = ({ children }) => {
                                 rgba(255, 240, 200, 0.4) 100% /* Peach */
                             )`,
                             backgroundSize: "400% 400%",
-                            opacity: 0.6,
+                            opacity: 0.8,
                         }}
                     />
                 )}
