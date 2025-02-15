@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { AppBar, Toolbar, Typography, IconButton, Box, Drawer, List, ListItem, ListItemText } from "@mui/material";
-import { LightMode, AccountCircle, Menu as MenuIcon, Layers, NightsStay } from "@mui/icons-material";
-import { motion } from "framer-motion";
+import {  AccountCircle, Menu as MenuIcon, Layers } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreditsModal from "./CreditsModal";
 import GoogleLoginModal from "./GoogleLoginModal";
+import DarkModeToggle from "./DarkModeToggle";
 
 const NavBar = ({ darkMode, setDarkMode }) => {
     const [creditsModalOpen, setCreditsModalOpen] = useState(false);
@@ -117,28 +117,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                         </Box>
 
                         {/* Dark Mode Toggle */}
-                        <Box
-                            onClick={() => setDarkMode(!darkMode)}
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                backgroundColor: darkMode ? "#222" : "#fff",
-                                padding: { xs: "5px 10px", sm: "6px 12px" },
-                                borderRadius: "30px",
-                                boxShadow: darkMode ? "0px 3px 8px rgba(255, 255, 255, 0.1)" : "0px 3px 8px rgba(0,0,0,0.1)",
-                                cursor: "pointer",
-                                transition: "0.3s",
-                                "&:hover": { transform: "scale(1.05)" },
-                            }}
-                        >
-                            <motion.div key={darkMode ? "sun" : "moon"} initial={{ rotate: 180 }} animate={{ rotate: 0 }} transition={{ duration: 0.5 }}>
-                                {darkMode ? (
-                                    <LightMode sx={{ fontSize: { xs: 18, sm: 20 }, color: "#FFD700" }} />
-                                ) : (
-                                    <NightsStay sx={{ fontSize: { xs: 18, sm: 20 }, color: "#FFD700" }} />
-                                )}
-                            </motion.div>
-                        </Box>
+                        <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
                     </Box>
                 </Toolbar>
             </AppBar>
