@@ -3,12 +3,14 @@ import { AppBar, Toolbar, Typography, IconButton, Box, Drawer, List, ListItem, L
 import { LightMode, AccountCircle, Menu as MenuIcon, Layers, NightsStay } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import CreditsModal from "./CreditsModal"; // Import the credits modal
+import CreditsModal from "./CreditsModal";
+import GoogleLoginModal from "./GoogleLoginModal";
 
 const NavBar = ({ darkMode, setDarkMode }) => {
     const [creditsModalOpen, setCreditsModalOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
+    const [loginModalOpen, setLoginModalOpen] = useState(false);
 
     return (
         <>
@@ -98,6 +100,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
 
                         {/* Profile */}
                         <Box
+                            onClick={() => setLoginModalOpen(true)}
                             sx={{
                                 display: "flex",
                                 alignItems: "center",
@@ -159,6 +162,8 @@ const NavBar = ({ darkMode, setDarkMode }) => {
 
             {/* Credits Modal */}
             <CreditsModal open={creditsModalOpen} onClose={() => setCreditsModalOpen(false)} darkMode={darkMode} />
+            {/* Google Login Modal */}
+            <GoogleLoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
         </>
     );
 };
