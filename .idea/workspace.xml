@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="33cbcf19-0a06-4144-8f20-ac1ddbf6ac92" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/routes/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/routes/auth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GoogleLoginModal.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GoogleLoginModal.js" afterDir="false" />
-    </list>
+    <list default="true" id="33cbcf19-0a06-4144-8f20-ac1ddbf6ac92" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,7 +51,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "login",
-    "last_opened_file_path": "/Users/malinaneag/Desktop/Licenta/modular-super-res-project",
+    "last_opened_file_path": "/Users/malinaneag/Desktop/Licenta/modular-super-res-project/image-enhancement-frontend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -92,7 +87,7 @@
       <workItem from="1737562330679" duration="642000" />
       <workItem from="1739460009303" duration="65389000" />
       <workItem from="1739564033985" duration="3581000" />
-      <workItem from="1739618737236" duration="21231000" />
+      <workItem from="1739618737236" duration="21858000" />
     </task>
     <servers />
   </component>
