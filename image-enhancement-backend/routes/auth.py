@@ -1,15 +1,18 @@
 import json
+import os
 import requests
 import logging
-from flask import Blueprint, request, redirect, session, jsonify, url_for
+from flask import Blueprint, request, redirect, session, jsonify, current_app, url_for
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 from oauthlib.oauth2 import WebApplicationClient
 from config import Config
 
+# Enable OAuth2 over HTTP for local development
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 auth_bp = Blueprint("auth", __name__)
 
-# Flask-Login Setup
+# Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 
@@ -19,9 +22,8 @@ client = WebApplicationClient(Config.GOOGLE_CLIENT_ID)
 # Logger Setup
 logger = logging.getLogger(__name__)
 
-# Simulated User Database (Replace with actual DB in the future)
+# Simulated User Database (TEMPORARY - Replace with a real DB)
 users = {}
-
 
 class User(UserMixin):
     """Flask-Login User model for session management."""
@@ -35,19 +37,20 @@ class User(UserMixin):
         """Returns user details as a dictionary."""
         return {"id": self.id, "name": self.name, "email": self.email, "profile_pic": self.profile_pic}
 
-
 @login_manager.user_loader
 def load_user(user_id):
-    """Load user session from the in-memory store."""
+    """Load user session from the in-memory store (Temporary, use DB in production)."""
     return users.get(user_id)
 
+def get_google_provider_cfg():
+    """Fetch Google's OpenID Connect configuration."""
+    return requests.get(Config.GOOGLE_DISCOVERY_URL).json()
 
 @auth_bp.route("/login")
 def login():
     """Redirect user to Google OAuth login."""
     try:
-        google_discovery_url = Config.GOOGLE_DISCOVERY_URL
-        google_provider_cfg = requests.get(google_discovery_url).json()
+        google_provider_cfg = get_google_provider_cfg()
         authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
         request_uri = client.prepare_request_uri(
@@ -63,13 +66,12 @@ def login():
         logger.error(f"Error during login initiation: {str(e)}")
         return jsonify({"message": "Internal server error"}), 500
 
-
 @auth_bp.route("/login/callback")
 def callback():
     """Handle Google OAuth callback."""
     try:
         code = request.args.get("code")
-        google_provider_cfg = requests.get(Config.GOOGLE_DISCOVERY_URL).json()
+        google_provider_cfg = get_google_provider_cfg()
         token_endpoint = google_provider_cfg["token_endpoint"]
 
         # Request access token
@@ -101,17 +103,21 @@ def callback():
 
         if userinfo_response.get("email_verified"):
             user_id = userinfo_response["sub"]
+            user_email = userinfo_response["email"]
+
+            # Store user in memory (TEMPORARY: should use a database)
             users[user_id] = User(
                 user_id=user_id,
                 name=userinfo_response["name"],
-                email=userinfo_response["email"],
+                email=user_email,
                 profile_pic=userinfo_response["picture"]
             )
 
             login_user(users[user_id])
             session["user_id"] = user_id  # Persist user in session
+            session.permanent = True  # Ensure session persists
 
-            logger.info(f"User logged in: {userinfo_response['email']}")
+            logger.info(f"User logged in: {user_email}")
             return jsonify({
                 "message": "User logged in successfully",
                 "user": users[user_id].to_dict()
@@ -123,7 +129,6 @@ def callback():
     except Exception as e:
         logger.error(f"Error during callback handling: {str(e)}")
         return jsonify({"message": "Internal server error"}), 500
-
 
 @auth_bp.route("/logout")
 def logout():
@@ -138,7 +143,6 @@ def logout():
         logger.warning("Logout attempt by an unauthenticated user")
         return jsonify({"message": "No active session found"}), 400
 
-
 @auth_bp.route("/user")
 def get_user():
     """Return the current authenticated user's information."""
@@ -148,3 +152,7 @@ def get_user():
     else:
         logger.warning("Unauthenticated user attempted to access profile data")
         return jsonify({"message": "User not authenticated"}), 401
+
+def init_auth(app):
+    """Attach Flask-Login to Flask app."""
+    login_manager.init_app(app)
