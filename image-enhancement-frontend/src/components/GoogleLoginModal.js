@@ -5,6 +5,9 @@ import { styled } from "@mui/material/styles";
 import { FcGoogle } from "react-icons/fc";
 import { Close } from "@mui/icons-material";
 
+// 🔥 Use environment variable for backend URL
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+
 // Styled Google Login Button
 const GoogleButton = styled(Button)({
     backgroundColor: "#fff",
@@ -75,7 +78,7 @@ const GoogleLoginModal = ({ open, onClose }) => {
                         <GoogleButton
                             fullWidth
                             startIcon={<FcGoogle size={24} />}
-                            onClick={() => (window.location.href = "http://127.0.0.1:5000/login")}
+                            onClick={() => (window.location.href = `${BACKEND_URL}/login`)}
                         >
                             Sign in with Google
                         </GoogleButton>
