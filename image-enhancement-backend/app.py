@@ -1,20 +1,19 @@
 import logging
-from flask import Flask, session
+from flask import Flask
 from flask_cors import CORS
-from flask_login import LoginManager
 from config import Config
 from routes.upload import upload_bp
 from routes.enhance import enhance_bp
 from routes.health import health_bp
-from routes.auth import auth_bp, init_auth
+from routes.auth import auth_bp
 
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
 
-# Initialize Flask-Login
-init_auth(app)
+# ❌ REMOVE this line (no more Flask-Login)
+# init_auth(app)
 
 # Configure Logging
 logging.basicConfig(

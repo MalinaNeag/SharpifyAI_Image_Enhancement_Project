@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+
 class Config:
     # AWS Configuration
     AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
@@ -19,14 +20,17 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY", "default_secret_key")
 
-    # Google OAuth Configuration
+    # 🔹 Add Firebase API Key
+    FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
+
+    if not FIREBASE_API_KEY:
+        raise ValueError("Missing FIREBASE_API_KEY in .env file!")
+
+    # Google OAuth Configuration (No longer needed if using Firebase)
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
     GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
     GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-    if not all([GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI]):
-        raise ValueError("Missing Google OAuth configuration in .env file!")
-
-# Ensure the upload directory exists
-os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+    # Ensure the upload directory exists
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
