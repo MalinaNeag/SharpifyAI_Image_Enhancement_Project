@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AppBar, Toolbar, Typography, IconButton, Box, Drawer, List, ListItem, ListItemText } from "@mui/material";
-import {  AccountCircle, Menu as MenuIcon, Layers } from "@mui/icons-material";
+import { AccountCircle, Menu as MenuIcon, Layers } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { auth, signInWithGoogle, logout } from "../firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 import CreditsModal from "./CreditsModal";
 import GoogleLoginModal from "./GoogleLoginModal";
 import DarkModeToggle from "./DarkModeToggle";
 
 const NavBar = ({ darkMode, setDarkMode }) => {
+    const [user, setUser] = useState(null);
     const [creditsModalOpen, setCreditsModalOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
-    const navigate = useNavigate();
     const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const navigate = useNavigate();
+
+    // Monitor Firebase auth state
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+        return () => unsubscribe();
+    }, []);
 
     return (
         <>
@@ -39,20 +50,20 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                     <IconButton
                         onClick={() => setMenuOpen(true)}
                         sx={{
-                            display: { xs: "block", md: "none" }, // Only visible on mobile
+                            display: { xs: "block", md: "none" },
                             color: darkMode ? "#F5F5F5" : "#000",
                         }}
                     >
-                        <MenuIcon sx={{ fontSize: 20 }} /> {/* Smaller Icon */}
+                        <MenuIcon sx={{ fontSize: 20 }} />
                     </IconButton>
 
-                    {/* App Name / Logo - Clickable */}
+                    {/* App Name / Logo */}
                     <Typography
                         variant="h6"
                         onClick={() => navigate("/")}
                         sx={{
                             fontWeight: 700,
-                            fontSize: { xs: "18px", sm: "20px" }, // Slightly larger
+                            fontSize: { xs: "18px", sm: "20px" },
                             color: darkMode ? "#F5F5F5" : "#000",
                             letterSpacing: "0.5px",
                             cursor: "pointer",
@@ -62,45 +73,11 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                         Image Enhancer
                     </Typography>
 
-                    {/* Right Section: Credits | Profile | Dark Mode */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: { xs: 1, sm: 1.5 }, // Adjust spacing
-                        }}
-                    >
-                        {/* Credits - Clickable */}
+                    {/* Right Section: Credits | Profile/Login | Dark Mode */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 } }}>
+                        {/* Credits */}
                         <Box
                             onClick={() => setCreditsModalOpen(true)}
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                backgroundColor: darkMode ? "#222" : "#fff",
-                                padding: { xs: "5px 10px", sm: "6px 12px" }, // Bigger tap area
-                                borderRadius: "30px",
-                                boxShadow: darkMode ? "0px 3px 8px rgba(255, 255, 255, 0.1)" : "0px 3px 8px rgba(0,0,0,0.1)",
-                                cursor: "pointer",
-                                transition: "0.3s",
-                                "&:hover": { transform: "scale(1.05)" },
-                            }}
-                        >
-                            <Layers sx={{ fontSize: { xs: 18, sm: 20 }, color: darkMode ? "#F5F5F5" : "#000" }} />
-                            <Typography
-                                sx={{
-                                    ml: 1,
-                                    fontWeight: "bold",
-                                    fontSize: { xs: "13px", sm: "15px" }, // Slightly larger font
-                                    color: darkMode ? "#F5F5F5" : "#000"
-                                }}
-                            >
-                                3
-                            </Typography>
-                        </Box>
-
-                        {/* Profile */}
-                        <Box
-                            onClick={() => setLoginModalOpen(true)}
                             sx={{
                                 display: "flex",
                                 alignItems: "center",
@@ -113,8 +90,51 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                 "&:hover": { transform: "scale(1.05)" },
                             }}
                         >
-                            <AccountCircle sx={{ fontSize: { xs: 18, sm: 20 }, color: darkMode ? "#F5F5F5" : "#000" }} />
+                            <Layers sx={{ fontSize: { xs: 18, sm: 20 }, color: darkMode ? "#F5F5F5" : "#000" }} />
+                            <Typography sx={{ ml: 1, fontWeight: "bold", fontSize: { xs: "13px", sm: "15px" }, color: darkMode ? "#F5F5F5" : "#000" }}>
+                                3
+                            </Typography>
                         </Box>
+
+                        {/* Profile / Login */}
+                        {user ? (
+                            <Box
+                                onClick={() => logout(setUser)}
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    backgroundColor: darkMode ? "#222" : "#fff",
+                                    padding: { xs: "5px 10px", sm: "6px 12px" },
+                                    borderRadius: "30px",
+                                    boxShadow: darkMode ? "0px 3px 8px rgba(255, 255, 255, 0.1)" : "0px 3px 8px rgba(0,0,0,0.1)",
+                                    cursor: "pointer",
+                                    transition: "0.3s",
+                                    "&:hover": { transform: "scale(1.05)" },
+                                }}
+                            >
+                                <Typography sx={{ mr: 1, fontSize: "14px", fontWeight: 600 }}>
+                                    Hi, {user.displayName.split(" ")[0]}
+                                </Typography>
+                                <AccountCircle sx={{ fontSize: { xs: 18, sm: 20 }, color: darkMode ? "#F5F5F5" : "#000" }} />
+                            </Box>
+                        ) : (
+                            <Box
+                                onClick={() => setLoginModalOpen(true)}
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    backgroundColor: darkMode ? "#222" : "#fff",
+                                    padding: { xs: "5px 10px", sm: "6px 12px" },
+                                    borderRadius: "30px",
+                                    boxShadow: darkMode ? "0px 3px 8px rgba(255, 255, 255, 0.1)" : "0px 3px 8px rgba(0,0,0,0.1)",
+                                    cursor: "pointer",
+                                    transition: "0.3s",
+                                    "&:hover": { transform: "scale(1.05)" },
+                                }}
+                            >
+                                <AccountCircle sx={{ fontSize: { xs: 18, sm: 20 }, color: darkMode ? "#F5F5F5" : "#000" }} />
+                            </Box>
+                        )}
 
                         {/* Dark Mode Toggle */}
                         <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
@@ -141,6 +161,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
 
             {/* Credits Modal */}
             <CreditsModal open={creditsModalOpen} onClose={() => setCreditsModalOpen(false)} darkMode={darkMode} />
+
             {/* Google Login Modal */}
             <GoogleLoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
         </>
