@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
-// Load environment variables safely
+// Ensure environment variables are set correctly
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "",
     authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "",
@@ -13,14 +13,17 @@ const firebaseConfig = {
 };
 
 // Ensure Firebase is properly configured
-if (!firebaseConfig.apiKey) {
-    console.error("🚨 Firebase API key is missing! Check your .env file.");
+if (!firebaseConfig.apiKey || !firebaseConfig.authDomain) {
+    console.error("Firebase configuration is missing! Check your .env file.");
 }
 
-// Initialize Firebase
+// Initialize Firebase App & Auth
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+
+// Get Backend URL dynamically from environment variables
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
 
 const signInWithGoogle = async (setUser) => {
     try {
@@ -29,32 +32,37 @@ const signInWithGoogle = async (setUser) => {
         const token = await user.getIdToken();
 
         // Send token to Flask backend for validation
-        const response = await fetch("http://127.0.0.1:5000/auth/verify-token", {
+        const response = await fetch(`${BACKEND_URL}/auth/verify-token`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
             body: JSON.stringify({ token }),
         });
 
-        if (!response.ok) throw new Error("Token verification failed");
-        const data = await response.json();
+        if (!response.ok) {
+            throw new Error("Token verification failed");
+        }
 
+        const data = await response.json();
         setUser(data.user);
         return data.user;
     } catch (error) {
-        console.error("🚨 Login failed:", error);
+        console.error("Login failed:", error.message);
         return null;
     }
 };
 
 const logout = async (setUser) => {
-    await signOut(auth);
-    await fetch("http://127.0.0.1:5000/auth/logout", {
-        method: "POST",
-        credentials: "include",
-    });
-
-    setUser(null);
+    try {
+        await signOut(auth);
+        await fetch(`${BACKEND_URL}/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+        });
+        setUser(null);
+    } catch (error) {
+        console.error("Logout failed:", error.message);
+    }
 };
 
 export { auth, signInWithGoogle, logout };

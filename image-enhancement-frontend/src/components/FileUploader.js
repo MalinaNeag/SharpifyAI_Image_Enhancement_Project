@@ -35,6 +35,8 @@ const FileUploader = () => {
     const [colorization, setColorization] = useState(false);
     const [textEnhancement, setTextEnhancement] = useState(false);
 
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
+
     const purpleColor = "#6200EE";
 
     const onDrop = (acceptedFiles) => {
@@ -62,7 +64,7 @@ const FileUploader = () => {
 
         try {
             setIsUploading(true);
-            const response = await fetch("http://192.168.1.164:5000/upload", {
+            const response = await fetch(`${BACKEND_URL}/upload`, {
                 method: "POST",
                 body: formData,
             });
@@ -97,10 +99,10 @@ const FileUploader = () => {
         };
 
         try {
-            const response = await fetch("http://192.168.1.164:5000/enhance", {
+            const response = await fetch(`${BACKEND_URL}/enhance`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestBody),
+                body: JSON.stringify({ file_url: uploadedFileUrl }),
             });
 
             const data = await response.json();

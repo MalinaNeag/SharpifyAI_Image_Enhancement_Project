@@ -1,24 +1,25 @@
 import logging
-from flask import Flask
+from flask import Flask, session
 from flask_cors import CORS
+from flask_login import LoginManager
 from config import Config
 from routes.upload import upload_bp
 from routes.enhance import enhance_bp
 from routes.health import health_bp
 from routes.auth import auth_bp
 
+# Initialize Flask app
 app = Flask(__name__)
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+CORS(app)
 app.config.from_object(Config)
-
 
 # Configure Logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("backend.log"),
-        logging.StreamHandler(),
+        logging.FileHandler("backend.log"),  # Logs to a file
+        logging.StreamHandler()  # Logs to terminal
     ]
 )
 logger = logging.getLogger(__name__)
