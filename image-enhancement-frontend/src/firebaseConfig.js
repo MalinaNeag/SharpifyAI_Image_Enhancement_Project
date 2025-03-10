@@ -1,15 +1,21 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
+// Ensure environment variables are loaded
 const firebaseConfig = {
-    apiKey: "AIzaSyC-Bgx5Hry9xm0FoUPcCjjLz3u3fWB7LiQ",
-    authDomain: "superres-e34fd.firebaseapp.com",
-    projectId: "superres-e34fd",
-    storageBucket: "superres-e34fd.firebasestorage.app",
-    messagingSenderId: "555133015514",
-    appId: "1:555133015514:web:cf8d82338adc4b9ae75ce3",
-    measurementId: "G-YVSKVMRHDD"
+    apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "",
+    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "",
+    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "",
+    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "",
+    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "",
+    appId: process.env.REACT_APP_FIREBASE_APP_ID || "",
+    measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "",
 };
+
+// Check if Firebase is correctly configured
+if (!firebaseConfig.apiKey) {
+    console.error("Firebase API key is missing! Check your .env file.");
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -25,6 +31,7 @@ const signInWithGoogle = async (setUser) => {
         const response = await fetch("http://127.0.0.1:5000/auth/verify-token", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",  // Ensures session cookies persist
             body: JSON.stringify({ token }),
         });
 
@@ -41,7 +48,10 @@ const signInWithGoogle = async (setUser) => {
 
 const logout = async (setUser) => {
     await signOut(auth);
-    await fetch("http://127.0.0.1:5000/auth/logout", { method: "POST" });
+    await fetch("http://127.0.0.1:5000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+    });
 
     setUser(null);
 };
