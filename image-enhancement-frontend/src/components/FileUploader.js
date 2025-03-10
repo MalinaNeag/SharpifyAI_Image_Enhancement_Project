@@ -62,7 +62,7 @@ const FileUploader = () => {
 
         try {
             setIsUploading(true);
-            const response = await fetch("http://127.0.0.1:5000/upload", {
+            const response = await fetch("http://192.168.1.164:5000/upload", { // ✅ FIXED
                 method: "POST",
                 body: formData,
             });

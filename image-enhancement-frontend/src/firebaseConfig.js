@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
-// Ensure environment variables are loaded
+// Load environment variables safely
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "",
     authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "",
@@ -12,9 +12,9 @@ const firebaseConfig = {
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "",
 };
 
-// Check if Firebase is correctly configured
+// Ensure Firebase is properly configured
 if (!firebaseConfig.apiKey) {
-    console.error("Firebase API key is missing! Check your .env file.");
+    console.error("🚨 Firebase API key is missing! Check your .env file.");
 }
 
 // Initialize Firebase
@@ -28,10 +28,11 @@ const signInWithGoogle = async (setUser) => {
         const user = result.user;
         const token = await user.getIdToken();
 
+        // Send token to Flask backend for validation
         const response = await fetch("http://127.0.0.1:5000/auth/verify-token", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: "include",  // Ensures session cookies persist
+            credentials: "include",
             body: JSON.stringify({ token }),
         });
 
@@ -41,7 +42,7 @@ const signInWithGoogle = async (setUser) => {
         setUser(data.user);
         return data.user;
     } catch (error) {
-        console.error("Login failed:", error);
+        console.error("🚨 Login failed:", error);
         return null;
     }
 };
