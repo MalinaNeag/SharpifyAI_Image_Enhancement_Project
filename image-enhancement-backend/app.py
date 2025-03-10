@@ -7,9 +7,8 @@ from routes.enhance import enhance_bp
 from routes.health import health_bp
 from routes.auth import auth_bp
 
-# Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 app.config.from_object(Config)
 
 
