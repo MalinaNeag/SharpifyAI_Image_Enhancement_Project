@@ -104,7 +104,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                     display: "flex",
                                     alignItems: "center",
                                     backgroundColor: darkMode ? "#222" : "#fff",
-                                    padding: { xs: "5px 10px", sm: "6px 12px" },
+                                    padding: { xs: "5px", sm: "6px 12px" },
                                     borderRadius: "30px",
                                     boxShadow: darkMode ? "0px 3px 8px rgba(255, 255, 255, 0.1)" : "0px 3px 8px rgba(0,0,0,0.1)",
                                     cursor: "pointer",
@@ -112,10 +112,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                     "&:hover": { transform: "scale(1.05)" },
                                 }}
                             >
-                                <Typography sx={{ mr: 1, fontSize: "14px", fontWeight: 600 }}>
-                                    Hi, {user.displayName.split(" ")[0]}
-                                </Typography>
-                                <AccountCircle sx={{ fontSize: { xs: 18, sm: 20 }, color: darkMode ? "#F5F5F5" : "#000" }} />
+                                <AccountCircle sx={{ fontSize: { xs: 24, sm: 20 }, color: darkMode ? "#F5F5F5" : "#000" }} />
                             </Box>
                         ) : (
                             <Box

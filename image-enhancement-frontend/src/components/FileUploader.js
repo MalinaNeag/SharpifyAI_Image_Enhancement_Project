@@ -62,7 +62,7 @@ const FileUploader = () => {
 
         try {
             setIsUploading(true);
-            const response = await fetch("http://192.168.1.164:5000/upload", { // ✅ FIXED
+            const response = await fetch("http://192.168.1.164:5000/upload", {
                 method: "POST",
                 body: formData,
             });
@@ -97,7 +97,7 @@ const FileUploader = () => {
         };
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/enhance", {
+            const response = await fetch("http://192.168.1.164:5000/enhance", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestBody),
