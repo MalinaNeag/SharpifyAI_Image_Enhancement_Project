@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Container, Typography, Avatar, Button, Box, Grid, Card, CardMedia, CircularProgress } from "@mui/material";
+import { Typography, Avatar, Button, Box, CircularProgress, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { auth, logout } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+    S3Client,
+    ListObjectsV2Command,
+    GetObjectCommand,
+    DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import Gallery from "../components/Gallery"; // Uses updated Gallery
 
 const S3_BUCKET = "image-enhancement-bucket";
 const REGION = "eu-north-1";
@@ -18,6 +24,8 @@ const s3Client = new S3Client({
 });
 
 const ProfilePage = () => {
+    const theme = useTheme();
+    const darkMode = theme.palette.mode === "dark";
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [images, setImages] = useState([]);
@@ -46,7 +54,6 @@ const ProfilePage = () => {
             const { Contents } = await s3Client.send(listCommand);
 
             if (!Contents || Contents.length === 0) {
-                console.log("No images found in S3.");
                 setImages([]);
                 setLoading(false);
                 return;
@@ -56,10 +63,15 @@ const ProfilePage = () => {
 
             const imageUrls = await Promise.all(
                 Contents.map(async (file) => {
-                    console.log(`Processing file: ${file.Key}`);
                     const getObjectParams = { Bucket: S3_BUCKET, Key: file.Key };
-                    const url = await getSignedUrl(s3Client, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
-                    return url;
+                    const url = await getSignedUrl(s3Client, new GetObjectCommand(getObjectParams), {
+                        expiresIn: 3600,
+                    });
+
+                    // Extract enhancements from filename (Assumes format: filename_face_bg_text.jpg)
+                    const enhancements = file.Key.match(/face|background|text|colorization/gi) || [];
+
+                    return { url, key: file.Key, enhancements };
                 })
             );
 
@@ -71,24 +83,43 @@ const ProfilePage = () => {
         }
     };
 
+    const handleRemoveImage = async (imageUrl) => {
+        try {
+            // Find the corresponding image object from the images array
+            const imageToRemove = images.find((img) => img.url === imageUrl);
+            if (!imageToRemove || !imageToRemove.key) {
+                console.error("Error: Image key not found.");
+                return;
+            }
+
+            console.log(`Removing image: ${imageToRemove.key}`);
+
+            // Delete the image from AWS S3
+            const deleteCommand = new DeleteObjectCommand({
+                Bucket: S3_BUCKET,
+                Key: imageToRemove.key, // Use the S3 object key
+            });
+            await s3Client.send(deleteCommand);
+
+            // Remove the image from UI state
+            setImages((prevImages) => prevImages.filter((img) => img.key !== imageToRemove.key));
+        } catch (error) {
+            console.error("Error deleting image:", error);
+        }
+    };
+
     const handleLogout = async () => {
         await logout();
         navigate("/");
     };
 
     return (
-        <Container
-            maxWidth="lg"
+        <Box
             sx={{
                 textAlign: "center",
-                paddingY: { xs: 4, sm: 6 },
-                backgroundColor: "background.paper",
-                borderRadius: 4,
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                marginTop: { xs: 2, sm: 4 },
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
+                paddingY: { xs: 6, sm: 6 },
+                backdropFilter: "blur(15px)",
+                backgroundColor: darkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
             }}
         >
             {loading ? (
@@ -119,7 +150,17 @@ const ProfilePage = () => {
                                 {user.email}
                             </Typography>
 
-                            <Button onClick={handleLogout} sx={{ mt: 4 }}>
+                            <Button
+                                onClick={handleLogout}
+                                sx={{
+                                    mt: 4,
+                                    padding: "10px 20px",
+                                    borderRadius: 8,
+                                    backgroundColor: "#ff4757",
+                                    color: "#fff",
+                                    "&:hover": { backgroundColor: "#e84118" },
+                                }}
+                            >
                                 Logout
                             </Button>
                         </Box>
@@ -129,24 +170,11 @@ const ProfilePage = () => {
                         Your Uploaded Images
                     </Typography>
 
-                    {images.length > 0 ? (
-                        <Grid container spacing={3} sx={{ mt: 4 }}>
-                            {images.map((img, index) => (
-                                <Grid item xs={12} sm={6} md={4} key={index}>
-                                    <Card onClick={() => window.open(img, "_blank")}>
-                                        <CardMedia component="img" height="180" image={img} alt={`Uploaded ${index}`} />
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    ) : (
-                        <Typography variant="body1" sx={{ mt: 3 }}>
-                            No images uploaded yet.
-                        </Typography>
-                    )}
+                    {/* Pass images with enhancements to Gallery */}
+                    <Gallery images={images} onRemove={handleRemoveImage} />
                 </>
             )}
-        </Container>
+        </Box>
     );
 };
 
