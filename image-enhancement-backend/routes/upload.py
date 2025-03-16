@@ -10,17 +10,25 @@ upload_bp = Blueprint('upload', __name__)
 logger = logging.getLogger(__name__)
 
 # Define resolution constraints
-MAX_WIDTH = 5000   # Maximum allowed width in pixels
+MAX_WIDTH = 5000  # Maximum allowed width in pixels
 MAX_HEIGHT = 5000  # Maximum allowed height in pixels
+
 
 @upload_bp.route('/upload', methods=['POST'])
 def upload_file():
-    """Handles file upload and sends it to S3."""
+    """Handles file upload and sends it to S3 under the user's email folder."""
+
+    # Ensure a file was uploaded
     if 'file' not in request.files:
         logger.warning("No file provided in request.")
         return jsonify({"message": "No file provided"}), 400
 
     file = request.files['file']
+    user_email = request.form.get("email")  # Get user email from form data
+
+    if not user_email:
+        logger.warning("Missing user email in request.")
+        return jsonify({"message": "Missing user email"}), 400
 
     # Validate file format
     if not allowed_file(file.filename):
@@ -32,8 +40,7 @@ def upload_file():
     file_size = file.tell()
     file.seek(0)
 
-    max_size = Config.MAX_CONTENT_LENGTH
-    if file_size > max_size:
+    if file_size > Config.MAX_CONTENT_LENGTH:
         logger.warning(f"File too large: {file.filename} ({file_size / 1024:.2f} KB)")
         return jsonify({"message": "File is too large"}), 400
 
@@ -55,8 +62,8 @@ def upload_file():
                 os.remove(file_path)  # Cleanup
                 return jsonify({"message": "Image resolution exceeds allowed size"}), 400
 
-        # Upload to AWS S3
-        file_url = upload_file_to_s3(file_path, filename)
+        # Upload to AWS S3 (store under user's email folder)
+        file_url = upload_file_to_s3(file_path, filename, user_email)
 
         if file_url:
             os.remove(file_path)  # Cleanup local storage

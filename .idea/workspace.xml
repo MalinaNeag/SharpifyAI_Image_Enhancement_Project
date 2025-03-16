@@ -7,9 +7,13 @@
     <list default="true" id="33cbcf19-0a06-4144-8f20-ac1ddbf6ac92" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/image-enhancement-backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/routes/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/routes/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/routes/upload.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/routes/upload.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/services/s3_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/services/s3_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/FileUploader.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/FileUploader.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/firebaseConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/firebaseConfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/ProfilePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/ProfilePage.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,6 +76,7 @@
       <recent name="$PROJECT_DIR$/image-enhancement-frontend" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/image-enhancement-frontend/src/services" />
       <recent name="$PROJECT_DIR$/image-enhancement-frontend/src" />
       <recent name="$PROJECT_DIR$/image-enhancement-frontend/src/resources" />
       <recent name="$PROJECT_DIR$/image-enhancement-frontend/src/Drafts" />
@@ -102,7 +107,8 @@
       <workItem from="1740856182879" duration="1216000" />
       <workItem from="1740918411127" duration="695000" />
       <workItem from="1741190165409" duration="653000" />
-      <workItem from="1741591745245" duration="16206000" />
+      <workItem from="1741591745245" duration="18634000" />
+      <workItem from="1742117063421" duration="6255000" />
     </task>
     <servers />
   </component>

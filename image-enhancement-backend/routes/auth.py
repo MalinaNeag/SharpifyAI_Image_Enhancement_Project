@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from config import Config
 import logging
 
-auth_bp = Blueprint("auth", __name__)
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")  # Ensure correct URL prefix
 logger = logging.getLogger(__name__)
 
 def verify_firebase_token(token):
@@ -40,7 +40,6 @@ def verify_firebase_token(token):
         logger.error(f"Unexpected error verifying token: {str(e)}")
         return None
 
-
 @auth_bp.route("/verify-token", methods=["POST"])
 def verify_token():
     """Verify Firebase token sent from frontend."""
@@ -56,9 +55,8 @@ def verify_token():
     else:
         return jsonify({"message": "Invalid token"}), 401
 
-
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
-    """Client handles logout, just return success message."""
+    """Logout the user (handled client-side, just return success)."""
     logger.info("User logged out")
     return jsonify({"message": "User logged out"}), 200

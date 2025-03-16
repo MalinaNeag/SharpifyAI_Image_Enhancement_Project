@@ -12,8 +12,8 @@ const REGION = "eu-north-1";
 const s3Client = new S3Client({
     region: REGION,
     credentials: {
-        accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+        accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY || "",
     },
 });
 
@@ -40,17 +40,23 @@ const ProfilePage = () => {
     const fetchUserImages = async (email) => {
         try {
             const userFolder = email.replace(/[^a-zA-Z0-9]/g, "_") + "/";
+            console.log(`Fetching images from: ${S3_BUCKET}/${userFolder}`);
+
             const listCommand = new ListObjectsV2Command({ Bucket: S3_BUCKET, Prefix: userFolder });
             const { Contents } = await s3Client.send(listCommand);
 
-            if (!Contents) {
+            if (!Contents || Contents.length === 0) {
+                console.log("No images found in S3.");
                 setImages([]);
                 setLoading(false);
                 return;
             }
 
+            console.log("Found images in S3:", Contents);
+
             const imageUrls = await Promise.all(
                 Contents.map(async (file) => {
+                    console.log(`Processing file: ${file.Key}`);
                     const getObjectParams = { Bucket: S3_BUCKET, Key: file.Key };
                     const url = await getSignedUrl(s3Client, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
                     return url;
