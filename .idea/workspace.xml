@@ -6,12 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="33cbcf19-0a06-4144-8f20-ac1ddbf6ac92" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/routes/upload.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/routes/upload.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/services/s3_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/services/s3_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/FileUploader.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/FileUploader.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/Gallery.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/Gallery.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/ProfilePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/ProfilePage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/services/fileUploadService.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/services/fileUploadService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/.env" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
