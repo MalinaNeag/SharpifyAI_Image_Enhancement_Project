@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { styled } from "@mui/material/styles";
 import { FcGoogle } from "react-icons/fc";
 import { Close } from "@mui/icons-material";
+import { signInWithGoogle } from "../firebaseConfig";
 
 // Styled Google Login Button
 const GoogleButton = styled(Button)({
@@ -26,7 +27,7 @@ const GoogleButton = styled(Button)({
     },
 });
 
-const GoogleLoginModal = ({ open, onClose }) => {
+const GoogleLoginModal = ({ open, onClose, setUser }) => {
     return (
         <Modal
             open={open}
@@ -75,7 +76,7 @@ const GoogleLoginModal = ({ open, onClose }) => {
                         <GoogleButton
                             fullWidth
                             startIcon={<FcGoogle size={24} />}
-                            onClick={() => (window.location.href = "http://127.0.0.1:5000/login")}
+                            onClick={() => signInWithGoogle(setUser).then(onClose)}
                         >
                             Sign in with Google
                         </GoogleButton>

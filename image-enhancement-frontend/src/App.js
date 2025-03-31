@@ -4,6 +4,7 @@ import ThemeProviderWrapper from "./components/ThemeProviderWrapper";
 import WelcomeScreen from "./pages/WelcomeScreen";
 import UploadPage from "./pages/UploadPage";
 import NavBar from "./components/NavBar";
+import ProfilePage from "./pages/ProfilePage";
 
 const App = () => {
     return (
@@ -14,6 +15,7 @@ const App = () => {
                     <Routes>
                         <Route path="/" element={<WelcomeScreen />} />
                         <Route path="/upload" element={<UploadPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
                     </Routes>
                 </Router>
             )}

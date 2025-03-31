@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import {
     Box,
     Typography,
-    Button,
     Card,
     CardContent,
     CardMedia,
@@ -12,6 +11,7 @@ import {
     FormControlLabel,
     Grid,
     CircularProgress,
+    useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import FaceIcon from "@mui/icons-material/Face";
@@ -19,13 +19,18 @@ import LandscapeIcon from "@mui/icons-material/Landscape";
 import ColorLensIcon from "@mui/icons-material/ColorLens";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
-import UploadIcon from "@mui/icons-material/Upload";
+import { auth } from "../firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import { uploadFile, enhanceImage } from "../services/fileUploadService";
+import ButtonGlowing from "../components/ButtonGlowing"; // Your glowing button
 
 const FileUploader = () => {
+    const theme = useTheme();
+    const darkMode = theme.palette.mode === "dark"; // Detect dark mode
+    const [user, setUser] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-    const [isUploaded, setIsUploaded] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
     const [uploadedFileUrl, setUploadedFileUrl] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
@@ -35,13 +40,18 @@ const FileUploader = () => {
     const [colorization, setColorization] = useState(false);
     const [textEnhancement, setTextEnhancement] = useState(false);
 
-    const purpleColor = "#6200EE";
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            setUser(firebaseUser);
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     const onDrop = (acceptedFiles) => {
         const file = acceptedFiles[0];
         setSelectedFile(file);
         setPreview(URL.createObjectURL(file));
-        setIsUploaded(false);
         setUploadedFileUrl(null);
         setErrorMessage(null);
     };
@@ -49,70 +59,47 @@ const FileUploader = () => {
     const removeImage = () => {
         setSelectedFile(null);
         setPreview(null);
-        setIsUploaded(false);
         setUploadedFileUrl(null);
         setErrorMessage(null);
     };
 
-    const uploadFile = async () => {
-        if (!selectedFile) return;
-
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-
-        try {
-            setIsUploading(true);
-            const response = await fetch("http://127.0.0.1:5000/upload", {
-                method: "POST",
-                body: formData,
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                setIsUploaded(true);
-                setUploadedFileUrl(data.file_url);
-                setErrorMessage(null);
-            } else {
-                setErrorMessage(data.message || "Upload failed.");
-            }
-        } catch (error) {
-            setErrorMessage("File was not uploaded. Please try again.");
-        } finally {
-            setIsUploading(false);
-        }
-    };
-
-    const enhanceImage = async () => {
-        if (!uploadedFileUrl) {
-            alert("Please upload an image first!");
+    const handleEnhance = async () => {
+        if (!selectedFile || !user) {
+            setErrorMessage("No file selected or user not logged in.");
             return;
         }
 
-        const requestBody = {
-            file_url: uploadedFileUrl,
-            face: faceEnhancement,
-            background: backgroundEnhancement,
-            colorization: colorization,
-            text: textEnhancement,
-        };
-
+        setIsProcessing(true);
         try {
-            const response = await fetch("http://127.0.0.1:5000/enhance", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestBody),
+            const fileUrl = await uploadFile(selectedFile, user.email, {
+                face: faceEnhancement,
+                background: backgroundEnhancement,
+                colorization,
+                text: textEnhancement,
             });
 
-            const data = await response.json();
-            if (response.ok) {
-                console.log("Enhanced image:", data.enhanced_file_url);
+            if (!fileUrl) {
+                throw new Error("Upload to S3 failed.");
+            }
+
+            setUploadedFileUrl(fileUrl);
+
+            const enhancedUrl = await enhanceImage(fileUrl, {
+                face: faceEnhancement,
+                background: backgroundEnhancement,
+                colorization,
+                text: textEnhancement,
+            });
+
+            if (enhancedUrl) {
                 alert("Enhancement completed!");
             } else {
-                alert(data.message || "Enhancement failed.");
+                setErrorMessage("Enhancement failed.");
             }
         } catch (error) {
-            console.error("Error enhancing image:", error);
-            alert("An error occurred while enhancing the image.");
+            setErrorMessage(error.message);
+        } finally {
+            setIsProcessing(false);
         }
     };
 
@@ -126,30 +113,30 @@ const FileUploader = () => {
             sx={{
                 maxWidth: 800,
                 margin: "auto",
-                textAlign: "center",
-                padding: 3,
+                padding: 4,
                 borderRadius: 4,
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-                backgroundColor: "background.paper",
+                boxShadow: darkMode ? "0 6px 15px rgba(255, 255, 255, 0.2)" : "0 6px 15px rgba(0, 0, 0, 0.2)",
+                backgroundColor: darkMode ? "#121212" : "#f8f9fa",
+                color: darkMode ? "#ffffff" : "#000",
             }}
         >
             <CardContent>
+                {/* Dropzone */}
                 {!selectedFile && (
                     <Box
                         {...getRootProps()}
                         sx={{
-                            border: `2px dashed ${purpleColor}`,
+                            border: `2px dashed ${darkMode ? "#1DE9B6" : "#1DC4E9"}`,
                             borderRadius: "12px",
-                            padding: 0,
+                            padding: 3,
                             cursor: "pointer",
-                            height: "300px",
+                            height: "200px",
                             width: "100%",
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            "&:hover": {
-                                backgroundColor: "#EDE7F6",
-                            },
+                            backgroundColor: darkMode ? "#1E1E1E" : "#fafafa",
+                            "&:hover": { backgroundColor: darkMode ? "#333" : "#e3dffa" },
                         }}
                     >
                         <input {...getInputProps()} />
@@ -159,197 +146,63 @@ const FileUploader = () => {
                     </Box>
                 )}
 
-                {preview && !isUploaded && (
-                    <>
-                        <Box sx={{ position: "relative", marginTop: 3 }}>
-                            <CardMedia
-                                component="img"
-                                image={preview}
-                                alt="Preview"
-                                sx={{
-                                    height: 300,
-                                    width: "100%",
-                                    borderRadius: 4,
-                                    objectFit: "cover",
-                                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                                    marginBottom: 2,
-                                }}
-                            />
-                            <IconButton
-                                onClick={removeImage}
-                                sx={{
-                                    position: "absolute",
-                                    top: 8,
-                                    right: 8,
-                                    backgroundColor: "rgba(0, 0, 0, 0.6)",
-                                    color: "#FFFFFF",
-                                    "&:hover": {
-                                        backgroundColor: "rgba(0, 0, 0, 0.8)",
-                                    },
-                                }}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </Box>
-                        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: purpleColor,
-                                    color: "#FFFFFF",
-                                    "&:hover": {
-                                        backgroundColor: "#3700B3",
-                                    },
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                    marginBottom: 2,
-                                }}
-                                onClick={uploadFile}
-                                disabled={isUploading}
-                            >
-                                {isUploading ? (
-                                    <CircularProgress size={24} color="inherit" />
-                                ) : (
-                                    <>
-                                        <UploadIcon />
-                                        Upload
-                                    </>
-                                )}
-                            </Button>
-                        </Box>
-                    </>
-                )}
-
-                {isUploaded && (
-                    <>
-                        <Grid container spacing={2} sx={{ marginTop: 3 }}>
-                            <Grid item xs={12} sm={6}>
+                {/* Image Preview + Enhancements in Grid Layout */}
+                {preview && (
+                    <Grid container spacing={3} alignItems="center" mt={3}>
+                        {/* Image Preview Section */}
+                        <Grid item xs={12} sm={7}>
+                            <Box sx={{ position: "relative" }}>
                                 <CardMedia
                                     component="img"
                                     image={preview}
                                     alt="Preview"
                                     sx={{
-                                        height: 300,
-                                        width: "100%",
+                                        height: 250,
                                         borderRadius: 4,
                                         objectFit: "cover",
-                                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                                        boxShadow: darkMode ? "0 4px 10px rgba(255, 255, 255, 0.2)" : "0 4px 10px rgba(0, 0, 0, 0.1)",
                                     }}
                                 />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
+                                <IconButton
+                                    onClick={removeImage}
                                     sx={{
-                                        fontStyle: "italic",
-                                        marginBottom: 3,
-                                        textAlign: "left",
+                                        position: "absolute",
+                                        top: 8,
+                                        right: 8,
+                                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                        color: "#fff",
+                                        "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.8)" },
                                     }}
                                 >
-                                    Choose enhancements:
-                                </Typography>
-                                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={faceEnhancement}
-                                                onChange={(e) =>
-                                                    setFaceEnhancement(e.target.checked)
-                                                }
-                                            />
-                                        }
-                                        label={
-                                            <Box display="flex" alignItems="center" gap={1}>
-                                                <FaceIcon />
-                                                Face
-                                            </Box>
-                                        }
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={backgroundEnhancement}
-                                                onChange={(e) =>
-                                                    setBackgroundEnhancement(e.target.checked)
-                                                }
-                                            />
-                                        }
-                                        label={
-                                            <Box display="flex" alignItems="center" gap={1}>
-                                                <LandscapeIcon />
-                                                Background
-                                            </Box>
-                                        }
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={colorization}
-                                                onChange={(e) =>
-                                                    setColorization(e.target.checked)
-                                                }
-                                            />
-                                        }
-                                        label={
-                                            <Box display="flex" alignItems="center" gap={1}>
-                                                <ColorLensIcon />
-                                                Colorize
-                                            </Box>
-                                        }
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={textEnhancement}
-                                                onChange={(e) =>
-                                                    setTextEnhancement(e.target.checked)
-                                                }
-                                            />
-                                        }
-                                        label={
-                                            <Box display="flex" alignItems="center" gap={1}>
-                                                <TextFieldsIcon />
-                                                Text
-                                            </Box>
-                                        }
-                                    />
-                                </Box>
-                            </Grid>
+                                    <CloseIcon />
+                                </IconButton>
+                            </Box>
                         </Grid>
-                        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    backgroundColor: purpleColor,
-                                    color: "#FFFFFF",
-                                    "&:hover": {
-                                        backgroundColor: "#3700B3",
-                                    },
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                }}
-                                onClick={enhanceImage}
-                            >
-                                Enhance <AutoFixHighIcon sx={{ marginLeft: 1 }} />
-                            </Button>
-                        </Box>
-                    </>
+
+                        {/* Enhancement Options (Stacked on the Right) */}
+                        <Grid item xs={12} sm={5}>
+                            <Typography variant="body2" color="text.secondary" fontWeight="bold" mb={1}>
+                                Enhance Image:
+                            </Typography>
+                            <Box display="flex" flexDirection="column" gap={1}>
+                                <FormControlLabel control={<Switch checked={faceEnhancement} onChange={(e) => setFaceEnhancement(e.target.checked)} />} label={<Box display="flex" alignItems="center" gap={1}><FaceIcon /> Face</Box>} />
+                                <FormControlLabel control={<Switch checked={backgroundEnhancement} onChange={(e) => setBackgroundEnhancement(e.target.checked)} />} label={<Box display="flex" alignItems="center" gap={1}><LandscapeIcon /> Background</Box>} />
+                                <FormControlLabel control={<Switch checked={colorization} onChange={(e) => setColorization(e.target.checked)} />} label={<Box display="flex" alignItems="center" gap={1}><ColorLensIcon /> Colorize</Box>} />
+                                <FormControlLabel control={<Switch checked={textEnhancement} onChange={(e) => setTextEnhancement(e.target.checked)} />} label={<Box display="flex" alignItems="center" gap={1}><TextFieldsIcon /> Text</Box>} />
+                            </Box>
+                        </Grid>
+                    </Grid>
                 )}
-                {errorMessage && (
-                    <Typography
-                        variant="body2"
-                        color="error"
-                        sx={{
-                            marginTop: 2,
-                            fontWeight: "bold",
-                        }}
-                    >
-                        {errorMessage}
-                    </Typography>
+
+                {/* Enhance Button */}
+                {preview && (
+                    <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                        <ButtonGlowing text={isProcessing ? "Processing..." : "Enhance"} onClick={handleEnhance} icon={<AutoFixHighIcon />} />
+                    </Box>
                 )}
+
+                {/* Error Message */}
+                {errorMessage && <Typography variant="body2" color="error" sx={{ mt: 2, fontWeight: "bold" }}>{errorMessage}</Typography>}
             </CardContent>
         </Card>
     );

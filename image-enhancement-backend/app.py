@@ -6,15 +6,12 @@ from config import Config
 from routes.upload import upload_bp
 from routes.enhance import enhance_bp
 from routes.health import health_bp
-from routes.auth import auth_bp, init_auth
+from routes.auth import auth_bp
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 app.config.from_object(Config)
-
-# Initialize Flask-Login
-init_auth(app)
 
 # Configure Logging
 logging.basicConfig(
