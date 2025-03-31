@@ -1,0 +1,9 @@
+# Ignore cloned submodules and large model folders
+GFPGAN/
+retinaface/
+Real-ESRGAN/
+weights/
+*.pth
+*.ckpt
+__pycache__/
+*.pyc
