@@ -10,7 +10,6 @@ import {
     Switch,
     FormControlLabel,
     Grid,
-    CircularProgress,
     useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -31,7 +30,7 @@ const FileUploader = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [uploadedFileUrl, setUploadedFileUrl] = useState(null);
+    const [setUploadedFileUrl] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
 
     // Enhancement options
