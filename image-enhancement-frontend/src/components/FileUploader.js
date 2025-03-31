@@ -71,14 +71,19 @@ const FileUploader = () => {
 
         setIsProcessing(true);
         try {
-            // Upload to AWS S3 first
-            const fileUrl = await uploadFile(selectedFile, user.email);
+            const fileUrl = await uploadFile(selectedFile, user.email, {
+                face: faceEnhancement,
+                background: backgroundEnhancement,
+                colorization,
+                text: textEnhancement,
+            });
+
             if (!fileUrl) {
                 throw new Error("Upload to S3 failed.");
             }
+
             setUploadedFileUrl(fileUrl);
 
-            // Then enhance the image
             const enhancedUrl = await enhanceImage(fileUrl, {
                 face: faceEnhancement,
                 background: backgroundEnhancement,

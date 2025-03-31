@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Avatar, Button, Box, CircularProgress, useTheme } from "@mui/material";
+import {
+    Typography,
+    Avatar,
+    Button,
+    Box,
+    CircularProgress,
+    useTheme,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { auth, logout } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
@@ -8,9 +15,10 @@ import {
     ListObjectsV2Command,
     GetObjectCommand,
     DeleteObjectCommand,
+    HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import Gallery from "../components/Gallery"; // Uses updated Gallery
+import Gallery from "../components/Gallery";
 
 const S3_BUCKET = "image-enhancement-bucket";
 const REGION = "eu-north-1";
@@ -48,8 +56,6 @@ const ProfilePage = () => {
     const fetchUserImages = async (email) => {
         try {
             const userFolder = email.replace(/[^a-zA-Z0-9]/g, "_") + "/";
-            console.log(`Fetching images from: ${S3_BUCKET}/${userFolder}`);
-
             const listCommand = new ListObjectsV2Command({ Bucket: S3_BUCKET, Prefix: userFolder });
             const { Contents } = await s3Client.send(listCommand);
 
@@ -59,17 +65,32 @@ const ProfilePage = () => {
                 return;
             }
 
-            console.log("Found images in S3:", Contents);
-
             const imageUrls = await Promise.all(
                 Contents.map(async (file) => {
                     const getObjectParams = { Bucket: S3_BUCKET, Key: file.Key };
+
+                    // Generate signed GET URL
                     const url = await getSignedUrl(s3Client, new GetObjectCommand(getObjectParams), {
                         expiresIn: 3600,
                     });
 
-                    // Extract enhancements from filename (Assumes format: filename_face_bg_text.jpg)
-                    const enhancements = file.Key.match(/face|background|text|colorization/gi) || [];
+                    // Fetch metadata securely using SDK
+                    let enhancements = [];
+                    try {
+                        const headCommand = new HeadObjectCommand({ Bucket: S3_BUCKET, Key: file.Key });
+                        const metadataResponse = await s3Client.send(headCommand);
+                        const metadata = metadataResponse.Metadata || {};
+
+                        console.log("Metadata for", file.Key, metadata);
+
+                        enhancements = Object.entries(metadata)
+                            .filter(([_, value]) => value?.toLowerCase?.() === "true")
+                            .map(([key]) => key.toLowerCase());
+
+                        console.log("Extracted Enhancements:", enhancements);
+                    } catch (err) {
+                        console.warn(" No metadata for", file.Key, err);
+                    }
 
                     return { url, key: file.Key, enhancements };
                 })
@@ -85,24 +106,21 @@ const ProfilePage = () => {
 
     const handleRemoveImage = async (imageUrl) => {
         try {
-            // Find the corresponding image object from the images array
             const imageToRemove = images.find((img) => img.url === imageUrl);
             if (!imageToRemove || !imageToRemove.key) {
                 console.error("Error: Image key not found.");
                 return;
             }
 
-            console.log(`Removing image: ${imageToRemove.key}`);
-
-            // Delete the image from AWS S3
             const deleteCommand = new DeleteObjectCommand({
                 Bucket: S3_BUCKET,
-                Key: imageToRemove.key, // Use the S3 object key
+                Key: imageToRemove.key,
             });
             await s3Client.send(deleteCommand);
 
-            // Remove the image from UI state
-            setImages((prevImages) => prevImages.filter((img) => img.key !== imageToRemove.key));
+            setImages((prevImages) =>
+                prevImages.filter((img) => img.key !== imageToRemove.key)
+            );
         } catch (error) {
             console.error("Error deleting image:", error);
         }
@@ -119,7 +137,9 @@ const ProfilePage = () => {
                 textAlign: "center",
                 paddingY: { xs: 6, sm: 6 },
                 backdropFilter: "blur(15px)",
-                backgroundColor: darkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+                backgroundColor: darkMode
+                    ? "rgba(255, 255, 255, 0.1)"
+                    : "rgba(0, 0, 0, 0.05)",
             }}
         >
             {loading ? (
@@ -143,10 +163,19 @@ const ProfilePage = () => {
                                 }}
                             />
 
-                            <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>
+                            <Typography
+                                variant="h6"
+                                sx={{ mt: 2, fontWeight: "bold" }}
+                            >
                                 {user.displayName || "Anonymous"}
                             </Typography>
-                            <Typography variant="body1" sx={{ color: "text.secondary", fontSize: "0.9rem" }}>
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    color: "text.secondary",
+                                    fontSize: "0.9rem",
+                                }}
+                            >
                                 {user.email}
                             </Typography>
 
@@ -170,7 +199,6 @@ const ProfilePage = () => {
                         Your Uploaded Images
                     </Typography>
 
-                    {/* Pass images with enhancements to Gallery */}
                     <Gallery images={images} onRemove={handleRemoveImage} />
                 </>
             )}
