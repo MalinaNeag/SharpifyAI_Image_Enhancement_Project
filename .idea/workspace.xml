@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="33cbcf19-0a06-4144-8f20-ac1ddbf6ac92" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/routes/enhance.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/FileUploader.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/FileUploader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/services/fileUploadService.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/services/fileUploadService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,7 +29,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="backend-refactorization" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -52,7 +59,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;login&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;pipeline__connection&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/malinaneag/Desktop/Licenta/modular-super-res-project/image-enhancement-frontend&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -101,6 +108,7 @@
       <workItem from="1741190165409" duration="653000" />
       <workItem from="1741591745245" duration="18634000" />
       <workItem from="1742117063421" duration="12495000" />
+      <workItem from="1748182560414" duration="12523000" />
     </task>
     <servers />
   </component>
