@@ -2,6 +2,7 @@ import logging
 import boto3
 from botocore.exceptions import NoCredentialsError
 from config import Config
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -87,3 +88,23 @@ def fetch_user_images(email):
     except Exception as e:
         logger.error(f"Error retrieving images: {str(e)}")
         return []
+
+def upload_bytes_to_s3(data_bytes: bytes, content_type: str = "image/png") -> str | None:
+    """
+    Upload raw bytes (PNG/JPEG/etc.) to S3 under 'enhanced/<uuid>.png' and return the public URL.
+    """
+    key = f"enhanced/{uuid.uuid4().hex}.png"
+    try:
+        # Note: no ACL parameter (bucket policy must allow public-read by default)
+        s3_client.put_object(
+            Bucket=Config.AWS_BUCKET_NAME,
+            Key=key,
+            Body=data_bytes,
+            ContentType=content_type,
+        )
+        url = f"https://{Config.AWS_BUCKET_NAME}.s3.{Config.AWS_REGION}.amazonaws.com/{key}"
+        logger.info(f"[S3] Uploaded enhanced image → {url}")
+        return url
+    except (BotoCoreError, ClientError) as e:
+        logger.error(f"[S3] upload_bytes_to_s3 failed: {e}")
+        return None

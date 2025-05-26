@@ -1,14 +1,14 @@
-# routes/enhance_proxy.py
-
 import io
 import os
 import base64
 import logging
+import requests
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from gradio_client import Client as GradioClient
 from config import Config
 from PIL import Image
+from services.s3_service import upload_bytes_to_s3
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -20,19 +20,20 @@ if not logger.handlers:
 
 enhance_proxy = Blueprint("enhance_proxy", __name__)
 
-logger.info(f"Initializing Gradio client at {Config.GRADIO_URL}")
+logger.info(f"[Gradio] Connecting to {Config.GRADIO_URL}")
 gr_client = GradioClient(Config.GRADIO_URL)
+
 
 @enhance_proxy.route("/enhance", methods=["OPTIONS", "POST"])
 @cross_origin()
 def proxy_predict():
     logger.info("=== /enhance called ===")
     if request.method == "OPTIONS":
-        logger.info("Preflight OPTIONS")
+        logger.info("[CORS] Preflight OPTIONS")
         return "", 200
 
     payload = request.get_json(force=True, silent=True) or {}
-    logger.debug(f"Payload: {payload}")
+    logger.debug(f"[Payload] {payload}")
 
     file_url     = payload.get("file_url")
     face         = payload.get("face", False)
@@ -41,64 +42,93 @@ def proxy_predict():
     colorization = payload.get("colorization", False)
 
     if not file_url:
-        logger.warning("Missing file_url")
+        logger.warning("[Error] Missing file_url")
         return jsonify({"error": "Missing file_url"}), 400
 
-    logger.info("Calling gr_client.predict() …")
+    # 1) Call Gradio
+    logger.info(f"[Gradio] predict({file_url}, face={face}, …)")
     try:
         result = gr_client.predict(
             file_url, face, background, text, colorization,
             api_name="/predict"
         )
-        logger.info("… gr_client.predict returned")
+        logger.info("[Gradio] predict returned")
     except Exception as e:
-        logger.exception("Gradio client error")
-        return jsonify({"error": f"Gradio call failed: {e}"}), 502
+        logger.exception("[Error] Gradio client call failed")
+        return jsonify({"error": f"Gradio error: {e}"}), 502
 
-    logger.debug(f"Raw result type={type(result)}, value={result}")
+    logger.debug(f"[Raw result] type={type(result)}, value={result}")
 
-    # Convert whatever Gradio gave us into a valid <img src="…">
-    src = None
+    # 2) Normalize result → raw bytes
+    img_bytes = None
+    content_type = "image/png"
 
-    # 1) If dict with URL
-    if isinstance(result, dict) and result.get("url"):
-        src = result["url"]
-        logger.info("Using result['url'] as src")
+    # a) Local file path?
+    if isinstance(result, str) and os.path.isfile(result):
+        logger.info(f"[Result] local file path → reading {result}")
+        with open(result, "rb") as f:
+            img_bytes = f.read()
+        ext = os.path.splitext(result)[1].lower().lstrip(".")
+        content_type = f"image/{ext if ext!='webp' else 'webp'}"
 
-    # 2) If string
-    elif isinstance(result, str):
-        # If it's a path to a real file on disk
-        if os.path.isfile(result):
-            logger.info(f"Result is file path; re-opening via PIL to PNG: {result}")
-            try:
-                with Image.open(result) as img:
-                    buf = io.BytesIO()
-                    img.save(buf, format="PNG")
-                    b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
-                    src = f"data:image/png;base64,{b64}"
-            except Exception as img_err:
-                logger.exception("Failed to PIL-open the path; falling back to raw read")
-                raw = open(result, "rb").read()
-                b64 = base64.b64encode(raw).decode("utf-8")
-                # still label it as webp
-                src = f"data:image/webp;base64,{b64}"
-        else:
-            # treat it as already a URL or data URI
-            src = result
-            logger.info("Result is string URL/data-URI; using directly")
+    # b) Data-URI?
+    elif isinstance(result, str) and result.startswith("data:image"):
+        logger.info("[Result] data URI → decoding")
+        header, b64data = result.split(",", 1)
+        content_type = header.split(";")[0].split(":",1)[1]
+        img_bytes = base64.b64decode(b64data)
 
-    # 3) If PIL Image directly
+    # c) Remote URL?
+    elif isinstance(result, str) and result.startswith("http"):
+        logger.info(f"[Result] remote URL → fetching bytes from {result}")
+        try:
+            resp = requests.get(result, timeout=60)
+            resp.raise_for_status()
+            img_bytes = resp.content
+            content_type = resp.headers.get("Content-Type", content_type)
+        except Exception as e:
+            logger.warning(f"[Warning] failed to fetch remote URL: {e}")
+
+    # d) Dict with `path`?
+    elif isinstance(result, dict) and result.get("path") and os.path.isfile(result["path"]):
+        p = result["path"]
+        logger.info(f"[Result] dict path → reading {p}")
+        with open(p, "rb") as f:
+            img_bytes = f.read()
+        ext = os.path.splitext(p)[1].lower().lstrip(".")
+        content_type = f"image/{ext if ext!='webp' else 'webp'}"
+
+    # e) PIL Image?
     elif isinstance(result, Image.Image):
-        logger.info("Result is PIL.Image; encoding to data URI")
+        logger.info("[Result] PIL.Image → converting to PNG bytes")
         buf = io.BytesIO()
         result.save(buf, format="PNG")
-        b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
-        src = f"data:image/png;base64,{b64}"
+        img_bytes = buf.getvalue()
+        content_type = "image/png"
 
     else:
-        logger.warning("Unexpected result type; casting to string")
-        src = str(result)
+        # fallback: return raw URL or data-URI
+        fallback = None
+        if isinstance(result, dict) and result.get("url"):
+            fallback = result["url"]
+        elif isinstance(result, str):
+            fallback = result
+        if fallback:
+            logger.info(f"[Fallback] returning raw: {fallback[:60]}…")
+            return jsonify({"data":[fallback]}), 200
+        logger.error("[Error] Could not extract image bytes or URL")
+        return jsonify({"error":"Failed to process result"}), 500
 
-    logger.debug(f"Final src length={len(src)}")
-    logger.info("Returning JSON…")
-    return jsonify({"data":[src]}), 200
+    # 3) Upload to S3
+    if img_bytes:
+        logger.info("[S3] uploading enhanced bytes to S3")
+        s3_url = upload_bytes_to_s3(img_bytes, content_type)
+        if not s3_url:
+            logger.error("[Error] S3 upload failed")
+            return jsonify({"error":"S3 upload failed"}), 502
+        logger.info(f"[Done] returning S3 URL {s3_url}")
+        return jsonify({"data":[s3_url]}), 200
+
+    # Should never happen
+    logger.error("[Error] No image bytes produced")
+    return jsonify({"error":"Unknown processing error"}), 500
