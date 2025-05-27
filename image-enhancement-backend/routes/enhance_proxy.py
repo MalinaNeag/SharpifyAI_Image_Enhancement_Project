@@ -35,18 +35,20 @@ def proxy_predict():
     payload = request.get_json(force=True, silent=True) or {}
     logger.debug(f"[Payload] {payload}")
 
+    # Required parameters
     file_url     = payload.get("file_url")
+    user_email   = payload.get("email")
     face         = payload.get("face", False)
     background   = payload.get("background", False)
     text         = payload.get("text", False)
     colorization = payload.get("colorization", False)
 
-    if not file_url:
-        logger.warning("[Error] Missing file_url")
-        return jsonify({"error": "Missing file_url"}), 400
+    if not file_url or not user_email:
+        logger.warning("[Error] Missing file_url or email")
+        return jsonify({"error": "Missing file_url or email"}), 400
 
     # 1) Call Gradio
-    logger.info(f"[Gradio] predict({file_url}, face={face}, …)")
+    logger.info(f"[Gradio] predict({file_url}, face={face}, background={background}, text={text}, colorization={colorization})")
     try:
         result = gr_client.predict(
             file_url, face, background, text, colorization,
@@ -99,7 +101,7 @@ def proxy_predict():
         content_type = f"image/{ext if ext!='webp' else 'webp'}"
 
     # e) PIL Image?
-    elif isinstance(result, Image.Image):
+    elif hasattr(result, "save") and isinstance(result, Image.Image):
         logger.info("[Result] PIL.Image → converting to PNG bytes")
         buf = io.BytesIO()
         result.save(buf, format="PNG")
@@ -116,16 +118,28 @@ def proxy_predict():
         if fallback:
             logger.info(f"[Fallback] returning raw: {fallback[:60]}…")
             return jsonify({"data":[fallback]}), 200
+
         logger.error("[Error] Could not extract image bytes or URL")
         return jsonify({"error":"Failed to process result"}), 500
 
-    # 3) Upload to S3
+    # 3) Upload to S3 in the user’s folder, tagging metadata
     if img_bytes:
-        logger.info("[S3] uploading enhanced bytes to S3")
-        s3_url = upload_bytes_to_s3(img_bytes, content_type)
+        logger.info("[S3] uploading enhanced bytes to S3 under user folder")
+        s3_url = upload_bytes_to_s3(
+            data_bytes=img_bytes,
+            user_email=user_email,
+            enhancements={
+                "face": face,
+                "background": background,
+                "text": text,
+                "colorization": colorization
+            },
+            content_type=content_type
+        )
         if not s3_url:
             logger.error("[Error] S3 upload failed")
             return jsonify({"error":"S3 upload failed"}), 502
+
         logger.info(f"[Done] returning S3 URL {s3_url}")
         return jsonify({"data":[s3_url]}), 200
 
