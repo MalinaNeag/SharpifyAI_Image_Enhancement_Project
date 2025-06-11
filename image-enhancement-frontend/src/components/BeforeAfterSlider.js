@@ -1,8 +1,6 @@
-// src/components/BeforeAfterSlider.jsx
 import React, { useRef, useState, useEffect } from "react";
 import { Box } from "@mui/material";
-
-const BeforeAfterSlider = ({ src, height }) => {
+const BeforeAfterSlider = ({ beforeSrc, afterSrc, height }) => {
     const containerRef = useRef(null);
     const [sliderX, setSliderX] = useState(50);
     const [dragging, setDragging] = useState(false);
@@ -18,9 +16,7 @@ const BeforeAfterSlider = ({ src, height }) => {
         perc = Math.max(0, Math.min(100, perc));
         setSliderX(perc);
     };
-    const handleMouseUp = () => {
-        setDragging(false);
-    };
+    const handleMouseUp = () => setDragging(false);
 
     useEffect(() => {
         if (dragging) {
@@ -48,10 +44,10 @@ const BeforeAfterSlider = ({ src, height }) => {
                 cursor: "ew-resize",
             }}
         >
-            {/* 1) Base layer: CLEAR image (no blur) */}
+            {/* After (full image on base layer) */}
             <Box
                 component="img"
-                src={src}
+                src={afterSrc}
                 sx={{
                     position: "absolute",
                     top: 0,
@@ -62,10 +58,10 @@ const BeforeAfterSlider = ({ src, height }) => {
                 }}
             />
 
-            {/* 2) Overlay: BLURRED image clipped to the LEFT up to sliderX% */}
+            {/* Before (clipped to the left sliderX%) */}
             <Box
                 component="img"
-                src={src}
+                src={beforeSrc}
                 sx={{
                     position: "absolute",
                     top: 0,
@@ -73,12 +69,11 @@ const BeforeAfterSlider = ({ src, height }) => {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    filter: "blur(2px)",  // subtle blur
                     clipPath: `polygon(0 0, ${sliderX}% 0, ${sliderX}% 100%, 0 100%)`,
                 }}
             />
 
-            {/* 3) Vertical handle line + knob */}
+            {/* Vertical divider + handle */}
             <Box
                 sx={{
                     position: "absolute",

@@ -12,12 +12,21 @@ import {
   FormControlLabel,
   Grid,
   useTheme,
+  Fade,
+  Zoom,
+  Tooltip,
+  CircularProgress,
+  Collapse,
+  Alert,
+  Paper,
+  Divider
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import FaceIcon from "@mui/icons-material/Face";
 import LandscapeIcon from "@mui/icons-material/Landscape";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
+import InfoIcon from "@mui/icons-material/Info";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { uploadAndEnhance } from "../services/fileUploadService";
@@ -32,6 +41,7 @@ export default function FileUploader() {
   const [user, setUser] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [enhancedImage, setEnhancedImage] = useState(null);
 
   // Enhancement toggles
   const [faceEnhancement, setFaceEnhancement] = useState(false);
@@ -41,8 +51,9 @@ export default function FileUploader() {
   // UI state
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showInfo, setShowInfo] = useState(false);
 
-  // **Our gallery state** – list of all enhanced images
+  // Gallery state
   const [images, setImages] = useState([]);
 
   // Auth listener
@@ -56,17 +67,20 @@ export default function FileUploader() {
     const f = files[0];
     setSelectedFile(f);
     setPreview(URL.createObjectURL(f));
+    setEnhancedImage(null);
     setErrorMessage("");
   };
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: "image/*",
+    maxFiles: 1
   });
 
   // Clear the current selection
   const removeImage = () => {
     setSelectedFile(null);
     setPreview(null);
+    setEnhancedImage(null);
     setErrorMessage("");
   };
 
@@ -78,7 +92,7 @@ export default function FileUploader() {
   // Main enhancement
   const handleEnhance = async () => {
     if (!selectedFile || !user) {
-      setErrorMessage("Select a file and make sure you’re logged in.");
+      setErrorMessage("Select a file and make sure you're logged in.");
       return;
     }
     setIsProcessing(true);
@@ -99,6 +113,9 @@ export default function FileUploader() {
       if (backgroundEnhancement) enhancements.push("background");
       if (textEnhancement) enhancements.push("text");
 
+      // Set the enhanced image to display
+      setEnhancedImage(enhancedUrl);
+
       // Append to our gallery
       setImages((imgs) => [
         ...imgs,
@@ -107,10 +124,9 @@ export default function FileUploader() {
           url: enhancedUrl,
           enhancements,
           plots,
+          timestamp: new Date().toISOString()
         },
       ]);
-      // Clear dropzone
-      removeImage();
     } catch (e) {
       console.error("[FileUploader] enhance error:", e);
       setErrorMessage(e.message || "Enhancement failed");
@@ -120,151 +136,409 @@ export default function FileUploader() {
   };
 
   return (
-    <>
+    <Box sx={{ maxWidth: 1200, mx: "auto", my: 4 }}>
       <Card
         sx={{
-          maxWidth: 800,
-          mx: "auto",
-          p: 4,
           borderRadius: 4,
           boxShadow: darkMode
-            ? "0 6px 15px rgba(255,255,255,0.2)"
-            : "0 6px 15px rgba(0,0,0,0.2)",
-          bgcolor: darkMode ? "#121212" : "#f8f9fa",
-          color: darkMode ? "#fff" : "#000",
+            ? "0 8px 24px rgba(0, 150, 136, 0.3)"
+            : "0 8px 24px rgba(0, 0, 0, 0.1)",
+          bgcolor: darkMode ? "background.paper" : "#ffffff",
+          overflow: "visible",
+          position: "relative",
+          border: darkMode ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0, 0, 0, 0.12)"
         }}
       >
-        <CardContent>
+        <Box
+          sx={{
+            position: "absolute",
+            top: -20,
+            right: 20,
+            bgcolor: darkMode ? "#1DE9B6" : "#1DC4E9",
+            color: darkMode ? "#000" : "#fff",
+            px: 2,
+            py: 1,
+            borderRadius: 2,
+            boxShadow: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 1
+          }}
+        >
+          <AutoFixHighIcon fontSize="small" />
+          <Typography variant="subtitle2" fontWeight="bold">
+            Image Enhancer
+          </Typography>
+        </Box>
+
+        <CardContent sx={{ pt: 4 }}>
           {!selectedFile ? (
             <Box
               {...getRootProps()}
               sx={{
-                border: `2px dashed ${
-                  darkMode ? "#1DE9B6" : "#1DC4E9"
-                }`,
-                borderRadius: 2,
-                p: 3,
+                border: `2px dashed ${darkMode ? "#1DE9B6" : "#1DC4E9"}`,
+                borderRadius: 3,
+                p: 4,
                 height: 200,
                 display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
                 cursor: "pointer",
-                bgcolor: darkMode ? "#1E1E1E" : "#fafafa",
-                "&:hover": { bgcolor: darkMode ? "#333" : "#e3dffa" },
+                bgcolor: darkMode ? "rgba(29, 233, 182, 0.05)" : "rgba(29, 196, 233, 0.05)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  bgcolor: darkMode ? "rgba(29, 233, 182, 0.1)" : "rgba(29, 196, 233, 0.1)",
+                  borderColor: darkMode ? "#00BFA5" : "#00ACC1"
+                }
               }}
             >
               <input {...getInputProps()} />
-              <Typography color="text.secondary">
-                Drag & drop an image here, or click to select
-              </Typography>
+              <Zoom in={true}>
+                <Box textAlign="center">
+                  <AutoFixHighIcon
+                    sx={{
+                      fontSize: 48,
+                      mb: 1,
+                      color: darkMode ? "#1DE9B6" : "#1DC4E9"
+                    }}
+                  />
+                  <Typography variant="h6" gutterBottom>
+                    Drag & Drop Your Image
+                  </Typography>
+                  <Typography color="text.secondary">
+                    or click to browse files
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ mt: 2, display: "block" }}
+                  >
+                    Supports: JPG, PNG, WEBP
+                  </Typography>
+                </Box>
+              </Zoom>
             </Box>
           ) : (
-            <>
-              <Grid container spacing={3} alignItems="center" mt={3}>
-                <Grid item xs={12} sm={7}>
-                  <Box sx={{ position: "relative" }}>
+            <Fade in={true}>
+              <Box>
+                {/* Image Comparison Section */}
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', md: 'row' },
+                  gap: 3,
+                  mb: 3
+                }}>
+                  {/* Original Image */}
+                  <Box sx={{
+                    flex: 1,
+                    position: 'relative',
+                    border: darkMode ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0, 0, 0, 0.12)",
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    boxShadow: darkMode ? "0 4px 20px rgba(0, 0, 0, 0.5)" : "0 4px 20px rgba(0, 0, 0, 0.1)"
+                  }}>
                     <CardMedia
                       component="img"
                       src={preview}
-                      alt="Preview"
+                      alt="Original"
                       sx={{
-                        height: 250,
-                        borderRadius: 2,
-                        objectFit: "cover",
-                        boxShadow: darkMode
-                          ? "0 4px 10px rgba(255,255,255,0.2)"
-                          : "0 4px 10px rgba(0,0,0,0.1)",
+                        width: '100%',
+                        height: 'auto',
+                        maxHeight: '70vh',
+                        objectFit: 'contain',
+                        display: 'block'
                       }}
                     />
+                    <Box sx={{
+                      position: 'absolute',
+                      bottom: 8,
+                      left: 8,
+                      bgcolor: 'rgba(0,0,0,0.7)',
+                      color: '#fff',
+                      px: 1,
+                      borderRadius: 1
+                    }}>
+                      <Typography variant="caption">Original</Typography>
+                    </Box>
                     <IconButton
                       onClick={removeImage}
                       sx={{
                         position: "absolute",
                         top: 8,
                         right: 8,
-                        bgcolor: "rgba(0,0,0,0.6)",
+                        bgcolor: "rgba(0,0,0,0.7)",
                         color: "#fff",
-                        "&:hover": { bgcolor: "rgba(0,0,0,0.8)" },
+                        "&:hover": { bgcolor: "rgba(0,0,0,0.9)" },
+                        transition: "all 0.2s ease"
                       }}
                     >
-                      <CloseIcon />
+                      <CloseIcon fontSize="small" />
                     </IconButton>
                   </Box>
-                </Grid>
-                <Grid item xs={12} sm={5}>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    fontWeight="bold"
-                    mb={1}
+
+                  {/* Enhanced Image */}
+                  {enhancedImage && (
+                    <>
+                      <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' } }} />
+                      <Divider orientation="horizontal" flexItem sx={{ display: { xs: 'block', md: 'none' } }} />
+                      <Box sx={{
+                        flex: 1,
+                        position: 'relative',
+                        border: darkMode ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0, 0, 0, 0.12)",
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        boxShadow: darkMode ? "0 4px 20px rgba(0, 0, 0, 0.5)" : "0 4px 20px rgba(0, 0, 0, 0.1)"
+                      }}>
+                        <CardMedia
+                          component="img"
+                          src={enhancedImage}
+                          alt="Enhanced"
+                          sx={{
+                            width: '100%',
+                            height: 'auto',
+                            maxHeight: '70vh',
+                            objectFit: 'contain',
+                            display: 'block'
+                          }}
+                        />
+                        <Box sx={{
+                          position: 'absolute',
+                          bottom: 8,
+                          left: 8,
+                          bgcolor: 'rgba(0,0,0,0.7)',
+                          color: '#fff',
+                          px: 1,
+                          borderRadius: 1
+                        }}>
+                          <Typography variant="caption">Enhanced</Typography>
+                        </Box>
+                      </Box>
+                    </>
+                  )}
+                </Box>
+
+                {/* Enhancement Options */}
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: darkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)",
+                    border: darkMode
+                      ? "1px solid rgba(255, 255, 255, 0.12)"
+                      : "1px solid rgba(0, 0, 0, 0.08)"
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mb: 2
+                    }}
                   >
-                    Enhance Options
-                  </Typography>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={faceEnhancement}
-                        onChange={(e) =>
-                          setFaceEnhancement(e.target.checked)
-                        }
-                      />
-                    }
-                    label={
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <FaceIcon /> Face
-                      </Box>
-                    }
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={backgroundEnhancement}
-                        onChange={(e) =>
-                          setBackgroundEnhancement(e.target.checked)
-                        }
-                      />
-                    }
-                    label={
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <LandscapeIcon /> Background
-                      </Box>
-                    }
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={textEnhancement}
-                        onChange={(e) =>
-                          setTextEnhancement(e.target.checked)
-                        }
-                      />
-                    }
-                    label={
-                      <Box display="flex" alignItems="center" gap={1}>
-                        <TextFieldsIcon /> Text
-                      </Box>
-                    }
-                  />
-                </Grid>
-              </Grid>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="bold"
+                      color="text.primary"
+                    >
+                      Enhancement Options
+                    </Typography>
+                    <Tooltip title="Info about enhancements">
+                      <IconButton
+                        size="small"
+                        onClick={() => setShowInfo(!showInfo)}
+                        sx={{ color: darkMode ? "#1DE9B6" : "#1DC4E9" }}
+                      >
+                        <InfoIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
 
-              <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-                <ButtonGlowing
-                  icon={<AutoFixHighIcon />}
-                  text={isProcessing ? "Processing…" : "Enhance"}
-                  onClick={handleEnhance}
-                />
+                  <Collapse in={showInfo}>
+                    <Alert
+                      severity="info"
+                      sx={{ mb: 2, borderRadius: 1 }}
+                      onClose={() => setShowInfo(false)}
+                    >
+                      <Typography variant="body2">
+                        Select which aspects of your image to enhance. Face
+                        enhancement improves portraits, background
+                        enhancement adjusts scenery, and text enhancement
+                        makes written content clearer.
+                      </Typography>
+                    </Alert>
+                  </Collapse>
+
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={faceEnhancement}
+                          onChange={(e) =>
+                            setFaceEnhancement(e.target.checked)
+                          }
+                          color={darkMode ? "secondary" : "primary"}
+                        />
+                      }
+                      label={
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <FaceIcon
+                            sx={{
+                              color: faceEnhancement
+                                ? darkMode
+                                  ? "#1DE9B6"
+                                  : "#1DC4E9"
+                                : "inherit"
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontWeight: faceEnhancement ? "bold" : "normal",
+                              color: faceEnhancement
+                                ? darkMode
+                                  ? "#1DE9B6"
+                                  : "#1DC4E9"
+                                : "inherit"
+                            }}
+                          >
+                            Face Enhancement
+                          </Typography>
+                        </Box>
+                      }
+                      sx={{ m: 0 }}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={backgroundEnhancement}
+                          onChange={(e) =>
+                            setBackgroundEnhancement(e.target.checked)
+                          }
+                          color={darkMode ? "secondary" : "primary"}
+                        />
+                      }
+                      label={
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <LandscapeIcon
+                            sx={{
+                              color: backgroundEnhancement
+                                ? darkMode
+                                  ? "#1DE9B6"
+                                  : "#1DC4E9"
+                                : "inherit"
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontWeight: backgroundEnhancement
+                                ? "bold"
+                                : "normal",
+                              color: backgroundEnhancement
+                                ? darkMode
+                                  ? "#1DE9B6"
+                                  : "#1DC4E9"
+                                : "inherit"
+                            }}
+                          >
+                            Background Enhancement
+                          </Typography>
+                        </Box>
+                      }
+                      sx={{ m: 0 }}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={textEnhancement}
+                          onChange={(e) =>
+                            setTextEnhancement(e.target.checked)
+                          }
+                          color={darkMode ? "secondary" : "primary"}
+                        />
+                      }
+                      label={
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <TextFieldsIcon
+                            sx={{
+                              color: textEnhancement
+                                ? darkMode
+                                  ? "#1DE9B6"
+                                  : "#1DC4E9"
+                                : "inherit"
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontWeight: textEnhancement
+                                ? "bold"
+                                : "normal",
+                              color: textEnhancement
+                                ? darkMode
+                                  ? "#1DE9B6"
+                                  : "#1DC4E9"
+                                : "inherit"
+                            }}
+                          >
+                            Text Enhancement
+                          </Typography>
+                        </Box>
+                      }
+                      sx={{ m: 0 }}
+                    />
+                  </Box>
+
+                  <Box
+                    sx={{
+                      mt: 3,
+                      display: "flex",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <ButtonGlowing
+                      icon={
+                        isProcessing ? (
+                          <CircularProgress size={20} color="inherit" />
+                        ) : (
+                          <AutoFixHighIcon />
+                        )
+                      }
+                      text={isProcessing ? "Processing..." : "Enhance Image"}
+                      onClick={handleEnhance}
+                      disabled={isProcessing || !selectedFile}
+                      fullWidth
+                    />
+                  </Box>
+                </Paper>
               </Box>
-            </>
+            </Fade>
           )}
 
-          {errorMessage && (
-            <Typography color="error" sx={{ mt: 2, fontWeight: "bold" }}>
+          <Collapse in={Boolean(errorMessage)}>
+            <Alert
+              severity="error"
+              sx={{
+                mt: 2,
+                borderRadius: 2,
+                boxShadow: "none",
+                border: darkMode
+                  ? "1px solid rgba(255, 0, 0, 0.3)"
+                  : "1px solid rgba(255, 0, 0, 0.1)"
+              }}
+            >
               {errorMessage}
-            </Typography>
-          )}
+            </Alert>
+          </Collapse>
         </CardContent>
       </Card>
-    </>
+
+      {/* Gallery Section */}
+      {images.length > 0 && (
+        <Box sx={{ mt: 4 }}>
+          <Gallery images={images} onRemove={handleRemove} />
+        </Box>
+      )}
+    </Box>
   );
 }

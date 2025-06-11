@@ -14,10 +14,11 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowForward, Stars, AutoFixHigh, FaceRetouchingNatural, TextFields, Wallpaper } from "@mui/icons-material";
 
-import generalImg from "../resources/image.jpg";
 import BeforeAfterSlider from "../components/BeforeAfterSlider";
 import ButtonComponent from "../components/ButtonComponent";
 import ButtonGlowing from "../components/ButtonGlowing";
+
+import initialImg from "../resources/initial.png";
 
 const gradientAnimation = keyframes`
   0% {
@@ -36,18 +37,20 @@ const features = [
         title: "Magic Enhance",
         description: "One-click solution that automatically applies all enhancements for perfect results every time.",
         icon: <AutoFixHigh fontSize="large" />,
-        image: generalImg,
+        before: initialImg,
+        after: "/images/magic_after.jpg",
         link: "/upload",
-        color: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-    },
-    {
+        color: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      },
+      {
         title: "Face Restoration",
         description: "Revitalize blurry faces and recover lost details in portraits using advanced AI for natural, clear, and sharp results.",
         icon: <FaceRetouchingNatural fontSize="large" />,
-        image: "/images/face_enhance.jpg",
+        before: initialImg,
+        after: "/images/face_after.jpg",
         link: "/face-enhance",
-        color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
-    },
+        color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      },
     {
         title: "Text Clarifier",
         description: "Transform illegible text into razor-sharp clarity. Ideal for documents, screenshots, and historical records.",
@@ -319,11 +322,12 @@ const WelcomeScreen = () => {
                             background: feature.color
                         }}>
                             <BeforeAfterSlider
-                                src={feature.image}
-                                height="100%"
-                                width="100%"
-                                style={{ objectFit: "cover" }}
-                                overlayColor={feature.color}
+                              beforeSrc={feature.before}
+                              afterSrc={feature.after}
+                              height="100%"
+                              width="100%"
+                              style={{ objectFit: "cover" }}
+                              overlayColor={feature.color}
                             />
                             <Box sx={{
                                 position: "absolute",
