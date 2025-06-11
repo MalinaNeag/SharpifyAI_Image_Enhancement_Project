@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { AppBar, Toolbar, Typography, IconButton, Box, Drawer, List, ListItem, ListItemText, Menu, MenuItem } from "@mui/material";
-import { AccountCircle, Menu as MenuIcon, Layers } from "@mui/icons-material";
+import { AccountCircle, Menu as MenuIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { auth, logout } from "../firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import CreditsModal from "./CreditsModal";
 import GoogleLoginModal from "./GoogleLoginModal";
 import DarkModeToggle from "./DarkModeToggle";
+import logo from "../resources/logo.png";
 
 const NavBar = ({ darkMode, setDarkMode }) => {
     const [user, setUser] = useState(null);
-    const [creditsModalOpen, setCreditsModalOpen] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
 
-    // Monitor Firebase auth state
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
@@ -24,19 +22,17 @@ const NavBar = ({ darkMode, setDarkMode }) => {
         return () => unsubscribe();
     }, []);
 
-    // Open profile menu
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
-    // Close profile menu
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
 
     const handleLogout = async () => {
         await logout(setUser);
-        navigate("/"); // Redirect to home after logout
+        navigate("/");
         handleMenuClose();
     };
 
@@ -49,7 +45,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                     backdropFilter: "blur(6px)",
                     boxShadow: "none",
                     transition: "background 0.3s ease-in-out",
-                    height: "50px",
+                    height: "70px",
                     display: "flex",
                     justifyContent: "center",
                 }}
@@ -59,7 +55,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                         display: "flex",
                         justifyContent: "space-between",
                         px: { xs: 1, sm: 4, md: 6 },
-                        minHeight: "50px",
+                        minHeight: "70px !important",
                         flexWrap: "wrap",
                     }}
                 >
@@ -69,50 +65,51 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                         sx={{
                             display: { xs: "block", md: "none" },
                             color: darkMode ? "#F5F5F5" : "#000",
+                            alignSelf: "center",
                         }}
                     >
-                        <MenuIcon sx={{ fontSize: 20 }} />
+                        <MenuIcon sx={{ fontSize: 24 }} />
                     </IconButton>
 
-                    {/* App Name / Logo */}
-                    <Typography
-                        variant="h6"
+                    {/* App Logo and Name */}
+                    <Box
                         onClick={() => navigate("/")}
                         sx={{
-                            fontWeight: 700,
-                            fontSize: { xs: "18px", sm: "20px" },
-                            color: darkMode ? "#F5F5F5" : "#000",
-                            letterSpacing: "0.5px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
                             cursor: "pointer",
-                            "&:hover": { textDecoration: "underline" },
+                            height: "100%",
                         }}
                     >
-                        Image Enhancer
-                    </Typography>
-
-                    {/* Right Section: Credits | Profile/Login | Dark Mode */}
-                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 } }}>
-                        {/* Credits */}
                         <Box
-                            onClick={() => setCreditsModalOpen(true)}
+                            component="img"
+                            src={logo}
+                            alt="SharpifyAI Logo"
                             sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                backgroundColor: darkMode ? "#222" : "#fff",
-                                padding: { xs: "5px 10px", sm: "6px 12px" },
-                                borderRadius: "30px",
-                                boxShadow: darkMode ? "0px 3px 8px rgba(255, 255, 255, 0.1)" : "0px 3px 8px rgba(0,0,0,0.1)",
-                                cursor: "pointer",
-                                transition: "0.3s",
-                                "&:hover": { transform: "scale(1.05)" },
+                                height: { xs: 40, sm: 40, md: 40 },
+                                width: "auto",
+                                objectFit: "contain",
+                                filter: darkMode ? "brightness(0) invert(1)" : "none",
+                                transition: "height 0.3s ease",
+                            }}
+                        />
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 700,
+                                fontSize: { xs: "20px", sm: "24px" },
+                                color: darkMode ? "#F5F5F5" : "#000",
+                                letterSpacing: "0.5px",
+                                "&:hover": { textDecoration: "underline" },
                             }}
                         >
-                            <Layers sx={{ fontSize: { xs: 18, sm: 20 }, color: darkMode ? "#F5F5F5" : "#000" }} />
-                            <Typography sx={{ ml: 1, fontWeight: "bold", fontSize: { xs: "13px", sm: "15px" }, color: darkMode ? "#F5F5F5" : "#000" }}>
-                                3
-                            </Typography>
-                        </Box>
+                            SharpifyAI
+                        </Typography>
+                    </Box>
 
+                    {/* Right Section: Profile/Login | Dark Mode */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 } }}>
                         {/* Profile / Login */}
                         {user ? (
                             <>
@@ -131,7 +128,6 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                     }}
                                 >
                                     <AccountCircle sx={{ fontSize: { xs: 24, sm: 28 }, color: darkMode ? "#F5F5F5" : "#000" }} />
-                                    {/* Show Name Only on Web */}
                                     <Typography
                                         sx={{
                                             ml: 1,
@@ -141,7 +137,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                             color: darkMode ? "#F5F5F5" : "#000",
                                         }}
                                     >
-                                        {user.displayName.split(" ")[0]}'s Profile
+                                        {user.displayName?.split(" ")[0]}'s Profile
                                     </Typography>
                                 </Box>
                                 <Menu
@@ -159,10 +155,10 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                     sx={{
                                         mt: 1,
                                         "& .MuiPaper-root": {
-                                            borderRadius: "12px", // Rounded corners
-                                            minWidth: "150px", // Slightly wider
-                                            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)", // Softer shadow
-                                            backdropFilter: "blur(8px)", // Subtle blur
+                                            borderRadius: "12px",
+                                            minWidth: "150px",
+                                            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
+                                            backdropFilter: "blur(8px)",
                                             backgroundColor: darkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.8)",
                                             color: darkMode ? "#F5F5F5" : "#000",
                                         },
@@ -170,9 +166,9 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                 >
                                     <MenuItem
                                         sx={{
-                                            fontSize: "14px", // Slightly bigger text
-                                            fontWeight: 500, // Slightly bolder
-                                            "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.05)" }, // Light hover effect
+                                            fontSize: "14px",
+                                            fontWeight: 500,
+                                            "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.05)" },
                                         }}
                                         onClick={() => { navigate("/profile"); handleMenuClose(); }}
                                     >
@@ -236,8 +232,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                 </Box>
             </Drawer>
 
-            {/* Modals */}
-            <CreditsModal open={creditsModalOpen} onClose={() => setCreditsModalOpen(false)} darkMode={darkMode} />
+            {/* Login Modal */}
             <GoogleLoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
         </>
     );
