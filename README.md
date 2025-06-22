@@ -1,4 +1,4 @@
-# SharpifyAI — Modular AI Image Enhancement 
+# SharpifyAI — Modular AI Image Enhancement
 ![SharpifyAI Preview](image-enhancement-frontend/src/resources/preview.jpg)
 ## What is SharpifyAI?
 
