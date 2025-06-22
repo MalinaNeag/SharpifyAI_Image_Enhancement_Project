@@ -151,6 +151,11 @@ const ProfilePage = () => {
         navigate("/");
     };
 
+    // Count unique enhanced images (half the total, assuming one original and one enhanced per pair)
+    const enhancedCount = Math.floor(
+        images.filter(img => img.key?.includes("enhanced_")).length
+    );
+
     return (
         <Box
             sx={{
@@ -287,7 +292,7 @@ const ProfilePage = () => {
                                                             fontSize: "1.1rem"
                                                         }}
                                                     >
-                                                        {images.length} enhanced {images.length === 1 ? "image" : "images"}
+                                                        {enhancedCount} enhanced {enhancedCount === 1 ? "image" : "images"}
                                                     </Typography>
                                                 </Box>
 

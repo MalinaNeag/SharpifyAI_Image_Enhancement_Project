@@ -18,55 +18,61 @@ import BeforeAfterSlider from "../components/BeforeAfterSlider";
 import ButtonComponent from "../components/ButtonComponent";
 import ButtonGlowing from "../components/ButtonGlowing";
 
-import initialImg from "../resources/initial.png";
+// Import all your image assets
+import faceBefore from "../resources/face_before.jpg";
+import faceAfter from "../resources/face_after.jpg";
+import textBefore from "../resources/text_before.jpg";
+import textAfter from "../resources/text_after.jpg";
+import backgroundBefore from "../resources/background_before.jpg";
+import backgroundAfter from "../resources/background_after.jpg";
+import fullBefore from "../resources/full_before.jpg";
+import fullAfter from "../resources/full_after.jpg";
 
 const gradientAnimation = keyframes`
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 `;
 
 const features = [
     {
-        title: "Magic Enhance",
-        description: "One-click solution that automatically applies all enhancements for perfect results every time.",
-        icon: <AutoFixHigh fontSize="large" />,
-        before: initialImg,
-        after: "/images/magic_after.jpg",
-        link: "/upload",
-        color: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      },
-      {
         title: "Face Restoration",
         description: "Revitalize blurry faces and recover lost details in portraits using advanced AI for natural, clear, and sharp results.",
         icon: <FaceRetouchingNatural fontSize="large" />,
-        before: initialImg,
-        after: "/images/face_after.jpg",
+        before: faceBefore,
+        after: faceAfter,
         link: "/face-enhance",
         color: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      },
+    },
     {
         title: "Text Clarifier",
         description: "Transform illegible text into razor-sharp clarity. Ideal for documents, screenshots, and historical records.",
         icon: <TextFields fontSize="large" />,
-        image: "/images/text_enhance.jpg",
+        before: textBefore,
+        after: textAfter,
         link: "/text-enhance",
-        color: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+        color: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
     },
     {
         title: "Scene Enhancement",
         description: "Enhance natural scenery, landscapes, buildings and urban environments with stunning clarity.",
         icon: <Wallpaper fontSize="large" />,
-        image: "/images/background_enhance.jpg",
+        before: backgroundBefore,
+        after: backgroundAfter,
         link: "/background",
-        color: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+        color: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
     },
+    {
+        title: "Full Image Enhancement",
+        description: "Apply all enhancements simultaneously for comprehensive image restoration.",
+        icon: <AutoFixHigh fontSize="large" />,
+        before: fullBefore,
+        after: fullAfter,
+        link: "/enhance?type=all",
+        color: "linear-gradient(135deg, #FFD700 0%, #DAA520 100%)",
+        special: true,
+        borderColor: "#FFD700"
+    }
 ];
 
 const WelcomeScreen = () => {
@@ -96,6 +102,14 @@ const WelcomeScreen = () => {
                 ease: "easeOut"
             }
         }
+    };
+
+    // Spring animation configuration
+    const springConfig = {
+        type: "spring",
+        damping: 10,
+        stiffness: 100,
+        mass: 0.5
     };
 
     return (
@@ -192,32 +206,32 @@ const WelcomeScreen = () => {
                                 <motion.div
                                     key={tech}
                                     whileHover={{ y: -2 }}
+                                    transition={{ duration: 0.2 }}
                                 >
-                                <Box sx={{
-                                  px: 2,
-                                  py: 1,
-                                  borderRadius: 4,
-                                  background: darkMode ? "#222" : "#FFF",             // dark background in dark mode, white in light mode
-                                  border: darkMode ? "1px solid #333" : "1px solid #EEE",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 1,
-                                  boxShadow: darkMode
-                                    ? "0 2px 12px rgba(0,0,0,0.26)"
-                                    : "0 2px 12px rgba(60,60,60,0.06)"
-                                }}>
-                                  <Stars fontSize="small" sx={{ color: darkMode ? "#ffda47" : "#007FFF" }} />
-                                  <Typography
-                                    variant="body2"
-                                    sx={{
-                                      fontWeight: 600,
-                                      color: darkMode ? "#FFF" : "#222"         // white text in dark, dark text in light
-                                    }}
-                                  >
-                                    {tech}
-                                  </Typography>
-                                </Box>
-
+                                    <Box sx={{
+                                        px: 2,
+                                        py: 1,
+                                        borderRadius: 4,
+                                        background: darkMode ? "#222" : "#FFF",
+                                        border: darkMode ? "1px solid #333" : "1px solid #EEE",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                        boxShadow: darkMode
+                                            ? "0 2px 12px rgba(0,0,0,0.26)"
+                                            : "0 2px 12px rgba(60,60,60,0.06)"
+                                    }}>
+                                        <Stars fontSize="small" sx={{ color: darkMode ? "#ffda47" : "#007FFF" }} />
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                fontWeight: 600,
+                                                color: darkMode ? "#FFF" : "#222"
+                                            }}
+                                        >
+                                            {tech}
+                                        </Typography>
+                                    </Box>
                                 </motion.div>
                             ))}
                         </Box>
@@ -266,290 +280,334 @@ const WelcomeScreen = () => {
                     </Typography>
                 </motion.div>
 
-               {isMobile ? (
-    <Box
-        sx={{
-            overflowX: "auto",
-            whiteSpace: "nowrap",
-            pb: 4,
-            display: "flex",
-            gap: 3,
-            pl: 2,
-            pr: 2,
-            "&::-webkit-scrollbar": { display: "none" },
-        }}
-    >
-        <AnimatePresence>
-            {features.map((feature, idx) => (
-                <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    style={{ display: "inline-block", minWidth: 280 }}
-                >
-                    <Card
-                        onClick={() => navigate(feature.link)}
+                {isMobile ? (
+                    <Box
                         sx={{
-                            borderRadius: 4,
-                            overflow: "hidden",
-                            cursor: "pointer",
+                            overflowX: "auto",
+                            whiteSpace: "nowrap",
+                            pb: 4,
                             display: "flex",
-                            flexDirection: "column",
-                            height: 380, // Fixed height for mobile
-                            width: 280, // Fixed width for mobile
-                            boxShadow: `0 8px 32px ${darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.1)"}`,
-                            background: darkMode
-                                ? "rgba(30,30,40,0.7)"
-                                : "rgba(255,255,255,0.8)",
-                            border: darkMode
-                                ? "1px solid rgba(255,255,255,0.1)"
-                                : "1px solid rgba(0,0,0,0.05)",
-                            backdropFilter: "blur(10px)",
-                            transition: "all 0.3s ease",
-                            "&:hover": {
-                                transform: "translateY(-5px)",
-                                boxShadow: `0 12px 40px ${darkMode ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.15)"}`
-                            }
+                            gap: 3,
+                            pl: 2,
+                            pr: 2,
+                            "&::-webkit-scrollbar": { display: "none" },
                         }}
                     >
-                        <Box sx={{
-                            height: 180, // Fixed height for mobile
-                            minHeight: 180,
-                            position: "relative",
-                            overflow: "hidden",
-                            background: feature.color
-                        }}>
-                            <BeforeAfterSlider
-                              beforeSrc={feature.before}
-                              afterSrc={feature.after}
-                              height="100%"
-                              width="100%"
-                              style={{ objectFit: "cover" }}
-                              overlayColor={feature.color}
-                            />
-                            <Box sx={{
-                                position: "absolute",
-                                top: 16,
-                                right: 16,
-                                width: 48,
-                                height: 48,
-                                borderRadius: "50%",
-                                background: "rgba(255,255,255,0.2)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                backdropFilter: "blur(5px)",
-                                border: "1px solid rgba(255,255,255,0.3)"
-                            }}>
-                                {React.cloneElement(feature.icon, {
-                                    sx: {
-                                        color: "#FFF",
-                                        fontSize: "1.8rem"
-                                    }
-                                })}
-                            </Box>
-                        </Box>
-                        <CardContent
-                            sx={{
-                                p: 3,
-                                display: "flex",
-                                flexDirection: "column",
-                                flexGrow: 1,
-                                textAlign: "left"
-                            }}
-                        >
-                            <Box sx={{ minHeight: 72, mb: 1.5 }}>
-                                <Typography
-                                    variant="h5"
-                                    fontWeight={700}
-                                    sx={{
-                                        color: darkMode ? "#FFF" : "#000",
-                                    }}
+                        <AnimatePresence>
+                            {features.map((feature, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true, margin: "-50px" }}
+                                    transition={{ delay: idx * 0.1, duration: 0.5 }}
+                                    style={{ display: "inline-block", minWidth: 280 }}
                                 >
-                                    {feature.title}
-                                </Typography>
-                            </Box>
-                            <Box sx={{ minHeight: 72, mb: 2 }}>
-                                <Typography
-                                    variant="body1"
-                                    sx={{
-                                        color: darkMode ? "#BBB" : "#666",
-                                    }}
-                                >
-                                    {feature.description}
-                                </Typography>
-                            </Box>
-                            <Box sx={{
-                                mt: "auto",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center"
-                            }}>
-                                <ButtonComponent
-                                    size="medium"
-                                    endIcon={<ArrowForward />}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        navigate(feature.link);
-                                    }}
-                                    sx={{
-                                        px: 3,
-                                        fontWeight: 600
-                                    }}
-                                >
-                                    Try Now
-                                </ButtonComponent>
-                                <Typography variant="caption" sx={{
-                                    color: darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
-                                }}>
-                                    {idx + 1}
-                                </Typography>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            ))}
-        </AnimatePresence>
-    </Box>
-) : (
-    <Grid container spacing={4} justifyContent="center">
-        <AnimatePresence>
-            {features.map((feature, idx) => (
-                <Grid item xs={12} sm={6} md={3} key={idx}>
-                    <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-50px" }}
-                        transition={{ delay: idx * 0.1, duration: 0.6 }}
-                        whileHover={{ y: -10 }}
-                    >
-                        <Card
-                            onClick={() => navigate(feature.link)}
-                            sx={{
-                                borderRadius: 4,
-                                overflow: "hidden",
-                                cursor: "pointer",
-                                display: "flex",
-                                flexDirection: "column",
-                                height: "100%",
-                                minHeight: 420, // Set minimum height for desktop
-                                boxShadow: `0 8px 32px ${darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.1)"}`,
-                                background: darkMode
-                                    ? "rgba(30,30,40,0.7)"
-                                    : "rgba(255,255,255,0.8)",
-                                border: darkMode
-                                    ? "1px solid rgba(255,255,255,0.1)"
-                                    : "1px solid rgba(0,0,0,0.05)",
-                                backdropFilter: "blur(10px)",
-                                transition: "all 0.3s ease",
-                                "&:hover": {
-                                    transform: "translateY(-10px)",
-                                    boxShadow: `0 16px 48px ${darkMode ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.2)"}`
-                                }
-                            }}
-                        >
-                            <Box sx={{
-                                height: 200, // Fixed height for desktop
-                                minHeight: 200,
-                                position: "relative",
-                                overflow: "hidden",
-                                background: feature.color
-                            }}>
-                                <BeforeAfterSlider
-                                    src={feature.image}
-                                    height="100%"
-                                    width="100%"
-                                    style={{ objectFit: "cover" }}
-                                    overlayColor={feature.color}
-                                />
-                                <Box sx={{
-                                    position: "absolute",
-                                    top: 20,
-                                    right: 20,
-                                    width: 56,
-                                    height: 56,
-                                    borderRadius: "50%",
-                                    background: "rgba(255,255,255,0.2)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    backdropFilter: "blur(5px)",
-                                    border: "1px solid rgba(255,255,255,0.3)"
-                                }}>
-                                    {React.cloneElement(feature.icon, {
-                                        sx: {
-                                            color: "#FFF",
-                                            fontSize: "2rem"
-                                        }
-                                    })}
-                                </Box>
-                            </Box>
-                            <CardContent
-                                sx={{
-                                    p: 3,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    flexGrow: 1,
-                                    textAlign: "left"
-                                }}
-                            >
-                                <Box sx={{ minHeight: 72, mb: 2 }}>
-                                    <Typography
-                                        variant="h5"
-                                        fontWeight={700}
-                                        sx={{
-                                            color: darkMode ? "#FFF" : "#000",
+                                    <motion.div
+                                        whileHover={{
+                                            y: -8,
+                                            scale: 1.03
                                         }}
+                                        transition={springConfig}
                                     >
-                                        {feature.title}
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ minHeight: 72, mb: 2 }}>
-                                    <Typography
-                                        variant="body1"
-                                        sx={{
-                                            color: darkMode ? "#BBB" : "#666",
-                                        }}
+                                        <Card
+                                            sx={{
+                                                borderRadius: 4,
+                                                overflow: "hidden",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                height: 380,
+                                                width: 280,
+                                                boxShadow: feature.special
+                                                    ? `0 4px 20px rgba(255, 215, 0, 0.3)`
+                                                    : `0 4px 20px ${darkMode ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.1)"}`,
+                                                background: darkMode
+                                                    ? "rgba(30,30,40,0.7)"
+                                                    : "rgba(255,255,255,0.8)",
+                                                border: feature.special
+                                                    ? "2px solid #FFD700"
+                                                    : darkMode
+                                                        ? "1px solid rgba(255,255,255,0.1)"
+                                                        : "1px solid rgba(0,0,0,0.05)",
+                                                backdropFilter: "blur(10px)",
+                                                transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                                                "&:hover": {
+                                                    boxShadow: feature.special
+                                                        ? `0 8px 30px rgba(255, 215, 0, 0.4)`
+                                                        : `0 8px 30px ${darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.15)"}`
+                                                }
+                                            }}
+                                        >
+                                            <Box sx={{
+                                                height: 180,
+                                                minHeight: 180,
+                                                position: "relative",
+                                                overflow: "hidden",
+                                                background: feature.color
+                                            }}>
+                                                <BeforeAfterSlider
+                                                    beforeSrc={feature.before}
+                                                    afterSrc={feature.after}
+                                                    height="100%"
+                                                    width="100%"
+                                                    sx={{
+                                                        pointerEvents: 'none',
+                                                        '&:hover': {
+                                                            cursor: 'default'
+                                                        }
+                                                    }}
+                                                />
+                                                <Box sx={{
+                                                    position: "absolute",
+                                                    top: 16,
+                                                    right: 16,
+                                                    width: 48,
+                                                    height: 48,
+                                                    borderRadius: "50%",
+                                                    background: "rgba(255,255,255,0.2)",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    backdropFilter: "blur(5px)",
+                                                    border: feature.special
+                                                        ? "1px solid rgba(255, 215, 0, 0.7)"
+                                                        : "1px solid rgba(255,255,255,0.3)"
+                                                }}>
+                                                    {React.cloneElement(feature.icon, {
+                                                        sx: {
+                                                            color: feature.special ? "#FFD700" : "#FFF",
+                                                            fontSize: "1.8rem"
+                                                        }
+                                                    })}
+                                                </Box>
+                                            </Box>
+                                            <CardContent
+                                                sx={{
+                                                    p: 3,
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    flexGrow: 1,
+                                                    textAlign: "left"
+                                                }}
+                                            >
+                                                <Box sx={{ minHeight: 72, mb: 1.5 }}>
+                                                    <Typography
+                                                        variant="h5"
+                                                        fontWeight={700}
+                                                        sx={{
+                                                            color: feature.special ? "#FFD700" : darkMode ? "#FFF" : "#000",
+                                                        }}
+                                                    >
+                                                        {feature.title}
+                                                    </Typography>
+                                                </Box>
+                                                <Box sx={{ minHeight: 72, mb: 2 }}>
+                                                    <Typography
+                                                        variant="body1"
+                                                        sx={{
+                                                            color: darkMode ? "#BBB" : "#666",
+                                                        }}
+                                                    >
+                                                        {feature.description}
+                                                    </Typography>
+                                                </Box>
+                                                <Box sx={{
+                                                    mt: "auto",
+                                                    display: "flex",
+                                                    justifyContent: "space-between",
+                                                    alignItems: "center"
+                                                }}>
+                                                    <ButtonComponent
+                                                        size="medium"
+                                                        endIcon={<ArrowForward />}
+                                                        onClick={() => navigate("/upload")}
+                                                        sx={{
+                                                            px: 3,
+                                                            fontWeight: 600,
+                                                            background: feature.special
+                                                                ? "linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(218,165,32,0.3) 100%)"
+                                                                : "inherit",
+                                                            color: feature.special ? "#FFD700" : "inherit",
+                                                            transition: "all 0.2s ease",
+                                                            "&:hover": {
+                                                                transform: "translateX(4px)"
+                                                            }
+                                                        }}
+                                                    >
+                                                        Try Now
+                                                    </ButtonComponent>
+                                                    <Typography variant="caption" sx={{
+                                                        color: feature.special ? "rgba(255,215,0,0.7)" : darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
+                                                    }}>
+                                                        {idx + 1}
+                                                    </Typography>
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </Box>
+                ) : (
+                    <Grid container spacing={4} justifyContent="center">
+                        <AnimatePresence>
+                            {features.map((feature, idx) => (
+                                <Grid item xs={12} sm={6} md={3} key={idx}>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 50 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true, margin: "-50px" }}
+                                        transition={{ delay: idx * 0.1, duration: 0.6 }}
                                     >
-                                        {feature.description}
-                                    </Typography>
-                                </Box>
-                                <Box sx={{
-                                    mt: "auto",
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center"
-                                }}>
-                                    <ButtonComponent
-                                        size="medium"
-                                        endIcon={<ArrowForward />}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            navigate(feature.link);
-                                        }}
-                                        sx={{
-                                            px: 3,
-                                            fontWeight: 600
-                                        }}
-                                    >
-                                        Try Now
-                                    </ButtonComponent>
-                                    <Typography variant="caption" sx={{
-                                        color: darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
-                                    }}>
-                                        {idx + 1}
-                                    </Typography>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                </Grid>
-            ))}
-        </AnimatePresence>
-    </Grid>
-)}
+                                        <motion.div
+                                            whileHover={{
+                                                y: feature.special ? -12 : -8,
+                                                scale: 1.03,
+                                            }}
+                                            transition={springConfig}
+                                        >
+                                            <Card
+                                                sx={{
+                                                    borderRadius: 4,
+                                                    overflow: "hidden",
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    height: "100%",
+                                                    minHeight: 420,
+                                                    boxShadow: feature.special
+                                                        ? `0 8px 25px rgba(255, 215, 0, 0.3)`
+                                                        : `0 8px 25px ${darkMode ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.1)"}`,
+                                                    background: darkMode
+                                                        ? "rgba(30,30,40,0.7)"
+                                                        : "rgba(255,255,255,0.8)",
+                                                    border: feature.special
+                                                        ? "2px solid #FFD700"
+                                                        : darkMode
+                                                            ? "1px solid rgba(255,255,255,0.1)"
+                                                            : "1px solid rgba(0,0,0,0.05)",
+                                                    backdropFilter: "blur(10px)",
+                                                    transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                                                    "&:hover": {
+                                                        boxShadow: feature.special
+                                                            ? `0 12px 35px rgba(255, 215, 0, 0.4)`
+                                                            : `0 12px 35px ${darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.2)"}`
+                                                    }
+                                                }}
+                                            >
+                                                <Box sx={{
+                                                    height: 200,
+                                                    minHeight: 200,
+                                                    position: "relative",
+                                                    overflow: "hidden",
+                                                    background: feature.color
+                                                }}>
+                                                    <BeforeAfterSlider
+                                                        beforeSrc={feature.before}
+                                                        afterSrc={feature.after}
+                                                        height="100%"
+                                                        width="100%"
+                                                        sx={{
+                                                            pointerEvents: 'none',
+                                                            '&:hover': {
+                                                                cursor: 'default'
+                                                            }
+                                                        }}
+                                                    />
+                                                    <Box sx={{
+                                                        position: "absolute",
+                                                        top: 20,
+                                                        right: 20,
+                                                        width: 56,
+                                                        height: 56,
+                                                        borderRadius: "50%",
+                                                        background: "rgba(255,255,255,0.2)",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        backdropFilter: "blur(5px)",
+                                                        border: feature.special
+                                                            ? "1px solid rgba(255, 215, 0, 0.7)"
+                                                            : "1px solid rgba(255,255,255,0.3)"
+                                                    }}>
+                                                        {React.cloneElement(feature.icon, {
+                                                            sx: {
+                                                                color: feature.special ? "#FFD700" : "#FFF",
+                                                                fontSize: "2rem"
+                                                            }
+                                                        })}
+                                                    </Box>
+                                                </Box>
+                                                <CardContent
+                                                    sx={{
+                                                        p: 3,
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        flexGrow: 1,
+                                                        textAlign: "left"
+                                                    }}
+                                                >
+                                                    <Box sx={{ minHeight: 72, mb: 2 }}>
+                                                        <Typography
+                                                            variant="h5"
+                                                            fontWeight={700}
+                                                            sx={{
+                                                                color: feature.special ? "#FFD700" : darkMode ? "#FFF" : "#000",
+                                                            }}
+                                                        >
+                                                            {feature.title}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box sx={{ minHeight: 72, mb: 2 }}>
+                                                        <Typography
+                                                            variant="body1"
+                                                            sx={{
+                                                                color: darkMode ? "#BBB" : "#666",
+                                                            }}
+                                                        >
+                                                            {feature.description}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box sx={{
+                                                        mt: "auto",
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        alignItems: "center"
+                                                    }}>
+                                                        <ButtonComponent
+                                                            size="medium"
+                                                            endIcon={<ArrowForward />}
+                                                            onClick={() => navigate("/upload")}
+                                                            sx={{
+                                                                px: 3,
+                                                                fontWeight: 600,
+                                                                background: feature.special
+                                                                    ? "linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(218,165,32,0.3) 100%)"
+                                                                    : "inherit",
+                                                                color: feature.special ? "#FFD700" : "inherit",
+                                                                transition: "all 0.2s ease",
+                                                                "&:hover": {
+                                                                    transform: "translateX(4px)"
+                                                                }
+                                                            }}
+                                                        >
+                                                            Try Now
+                                                        </ButtonComponent>
+                                                        <Typography variant="caption" sx={{
+                                                            color: feature.special ? "rgba(255,215,0,0.7)" : darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
+                                                        }}>
+                                                            {idx + 1}
+                                                        </Typography>
+                                                    </Box>
+                                                </CardContent>
+                                            </Card>
+                                        </motion.div>
+                                    </motion.div>
+                                </Grid>
+                            ))}
+                        </AnimatePresence>
+                    </Grid>
+                )}
 
                 {/* Final CTA Section */}
                 <motion.div
@@ -620,6 +678,7 @@ const WelcomeScreen = () => {
                             <motion.div
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.98 }}
+                                transition={springConfig}
                             >
                                 <ButtonGlowing
                                     text="Start Enhancing Now →"
@@ -631,7 +690,12 @@ const WelcomeScreen = () => {
                                         px: 5,
                                         py: 1.5,
                                         maxWidth: isMobile ? "100%" : 300,
-                                        mx: "auto"
+                                        mx: "auto",
+                                        background: "linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(218,165,32,0.4) 100%)",
+                                        color: "#FFD700",
+                                        "&:hover": {
+                                            boxShadow: "0 0 20px 5px rgba(255, 215, 0, 0.5)"
+                                        }
                                     }}
                                 />
                             </motion.div>

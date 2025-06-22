@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from config import Config
 import logging
 
-auth_bp = Blueprint("auth", __name__, url_prefix="/auth")  # Ensure correct URL prefix
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 logger = logging.getLogger(__name__)
 
 def verify_firebase_token(token):

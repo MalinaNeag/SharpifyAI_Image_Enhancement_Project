@@ -1,5 +1,3 @@
-# backend/services/s3_service.py
-
 import logging
 import re
 import uuid
@@ -21,42 +19,48 @@ s3_client = boto3.client(
 )
 BUCKET = Config.AWS_BUCKET_NAME
 
-
 def upload_file_to_s3(
-    file_path: str,
+    file_path: str | None,
     filename: str,
     user_email: str,
-    enhancements: dict | None = None
+    enhancements: dict | None = None,
+    image_data: bytes | None = None,
+    content_type: str = "image/png",
+    run_id: str | None = None
 ) -> str | None:
     """
-    Used by your '/upload' route.
-    Upload a local file to S3 under '<user_folder>/<filename>' and return its public URL.
-    Stores enhancement flags as metadata.
+    Uploads a file or bytes to S3 with metadata and returns the public URL.
+    Supports both local file path and in-memory bytes.
     """
     try:
         user_folder = user_email.replace("@", "_").replace(".", "_")
-        key = f"{user_folder}/{filename}"
+        key = f"{user_folder}/{filename}"  # ✅ Use provided filename
 
-        with open(file_path, "rb") as f:
-            body = f.read()
+        metadata = {k: "true" for k, v in (enhancements or {}).items() if v}
 
-        metadata = {k: "true" for k,v in (enhancements or {}).items() if v}
+        if image_data:
+            body = image_data
+        elif file_path:
+            with open(file_path, "rb") as f:
+                body = f.read()
+        else:
+            raise ValueError("No file_path or image_data provided")
 
         s3_client.put_object(
             Bucket=BUCKET,
             Key=key,
             Body=body,
             Metadata=metadata,
-            ContentType="image/jpeg",
+            ContentType=content_type
         )
+
         url = f"https://{BUCKET}.s3.{Config.AWS_REGION}.amazonaws.com/{key}"
-        logger.info(f"[S3] uploaded file -> {url}")
+        logger.info(f"[S3] uploaded -> {url}")
         return url
 
-    except (BotoCoreError, ClientError) as e:
+    except (BotoCoreError, ClientError, ValueError) as e:
         logger.error("upload_file_to_s3 error: %s", e)
         return None
-
 
 def upload_bytes_to_s3(
     data_bytes: bytes,
@@ -64,10 +68,6 @@ def upload_bytes_to_s3(
     enhancements: dict | None = None,
     content_type: str = "image/png"
 ) -> str | None:
-    """
-    Used by your '/enhance' proxy for generic byte uploads.
-    Upload raw bytes under '<user_folder>/enhanced_<uuid>.png'.
-    """
     try:
         user_folder = user_email.replace("@", "_").replace(".", "_")
         key = f"{user_folder}/enhanced_{uuid.uuid4().hex}.png"
@@ -89,46 +89,30 @@ def upload_bytes_to_s3(
         logger.error("upload_bytes_to_s3 failed: %s", e)
         return None
 
+def upload_main_image(data_bytes, user_email, enhancements, content_type="image/png", run_id=None):
+    if run_id is None:
+        run_id = uuid.uuid4().hex  # only generate if not passed
 
-def upload_main_image(
-    data_bytes: bytes,
-    user_email: str,
-    enhancements: dict,
-    content_type: str = "image/png"
-) -> tuple[str, str, str] | tuple[None, None, None]:
-    """
-    Uploads the *main* enhanced image under enhanced_<run_id>.png
-    Returns (run_id, url, key)
-    """
-    run_id = uuid.uuid4().hex
+    filename = f"enhanced_{run_id}.png"
     user_folder = user_email.replace("@", "_").replace(".", "_")
-    key = f"{user_folder}/enhanced_{run_id}.png"
-    metadata = {k: "true" for k,v in enhancements.items() if v}
-    try:
-        s3_client.put_object(
-            Bucket=BUCKET,
-            Key=key,
-            Body=data_bytes,
-            Metadata=metadata,
-            ContentType=content_type,
-        )
-        url = f"https://{BUCKET}.s3.{Config.AWS_REGION}.amazonaws.com/{key}"
-        return run_id, url, key
-    except Exception as e:
-        logger.error("upload_main_image failed: %s", e)
-        return None, None, None
+    s3_key = f"{user_folder}/{filename}"
 
+    # Upload logic below...
+    s3_url = upload_file_to_s3(
+        file_path=None,
+        filename=filename,
+        user_email=user_email,
+        enhancements=enhancements,
+        image_data=data_bytes
+    )
 
+    return run_id, s3_url, s3_key
 def upload_plot_image(
     data_bytes: bytes,
     user_email: str,
     run_id: str,
     idx: int
 ) -> tuple[str, str] | tuple[None, None]:
-    """
-    Uploads a single analysis plot under enhanced_<run_id>_plot_<idx>.png
-    Returns (url, key)
-    """
     user_folder = user_email.replace("@", "_").replace(".", "_")
     key = f"{user_folder}/enhanced_{run_id}_plot_{idx}.png"
     try:
@@ -144,13 +128,7 @@ def upload_plot_image(
         logger.error("upload_plot_image failed: %s", e)
         return None, None
 
-
 def fetch_user_images(email: str) -> list[dict]:
-    """
-    Lists all S3 objects under '<user_folder>/' and **groups** them
-    into runs of the form:
-      { url, key, enhancements, plots: [ ... ] }
-    """
     prefix = email.replace("@", "_").replace(".", "_") + "/"
     try:
         resp = s3_client.list_objects_v2(Bucket=BUCKET, Prefix=prefix)
@@ -161,14 +139,12 @@ def fetch_user_images(email: str) -> list[dict]:
 
     runs: dict[str, dict] = {}
 
-    # 1) Collect main images
     for obj in contents:
         key = obj["Key"]
-        m = re.match(rf"^{re.escape(prefix)}enhanced_([0-9a-f]+)\.png$", key)
+        m = re.match(rf"^{re.escape(prefix)}enhanced_([0-9a-f]+)\\.png$", key)
         if not m:
             continue
         run_id = m.group(1)
-        # fetch metadata flags
         try:
             head = s3_client.head_object(Bucket=BUCKET, Key=key)
             meta = head.get("Metadata", {})
@@ -185,10 +161,9 @@ def fetch_user_images(email: str) -> list[dict]:
             "plots": []
         }
 
-    # 2) Collect plots
     for obj in contents:
         key = obj["Key"]
-        m = re.match(rf"^{re.escape(prefix)}enhanced_([0-9a-f]+)_plot_[0-9]+\.png$", key)
+        m = re.match(rf"^{re.escape(prefix)}enhanced_([0-9a-f]+)_plot_[0-9]+\\.png$", key)
         if not m:
             continue
         run_id = m.group(1)
@@ -198,11 +173,7 @@ def fetch_user_images(email: str) -> list[dict]:
 
     return list(runs.values())
 
-
 def delete_file_from_s3(key: str) -> bool:
-    """
-    Deletes the object at the given S3 key.
-    """
     try:
         s3_client.delete_object(Bucket=BUCKET, Key=key)
         return True

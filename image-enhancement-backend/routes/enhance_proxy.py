@@ -8,7 +8,7 @@ from flask_cors import cross_origin
 from gradio_client import Client as GradioClient
 from config import Config
 from PIL import Image
-from services.s3_service import upload_bytes_to_s3
+from services.s3_service import upload_main_image
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -19,10 +19,8 @@ if not logger.handlers:
     logger.addHandler(ch)
 
 enhance_proxy = Blueprint("enhance_proxy", __name__)
-
 logger.info(f"[Gradio] Connecting to {Config.GRADIO_URL}")
 gr_client = GradioClient(Config.GRADIO_URL)
-
 
 @enhance_proxy.route("/enhance", methods=["OPTIONS", "POST"])
 @cross_origin()
@@ -30,9 +28,10 @@ def proxy_predict():
     if request.method == "OPTIONS":
         return "", 200
 
-    payload      = request.get_json(force=True, silent=True) or {}
+    payload = request.get_json(force=True, silent=True) or {}
     file_url     = payload.get("file_url")
     user_email   = payload.get("email")
+    run_id       = payload.get("run_id")  # ✅ NEW LINE
     face         = payload.get("face", False)
     background   = payload.get("background", False)
     text         = payload.get("text", False)
@@ -41,7 +40,7 @@ def proxy_predict():
     if not file_url or not user_email:
         return jsonify({"error": "Missing file_url or email"}), 400
 
-    # 1) Call Gradio (expect a single result)
+    # Step 1: Call Gradio
     try:
         result = gr_client.predict(
             file_url, face, background, text, colorization,
@@ -51,7 +50,7 @@ def proxy_predict():
         logger.exception("Gradio predict failed")
         return jsonify({"error": str(e)}), 502
 
-    # 2) Normalize 'result' → bytes
+    # Step 2: Normalize result to bytes
     img_bytes = None
     content_type = "image/png"
 
@@ -67,7 +66,8 @@ def proxy_predict():
     elif isinstance(result, str) and result.startswith("http"):
         r = requests.get(result, timeout=60)
         r.raise_for_status()
-        img_bytes, content_type = r.content, r.headers.get("Content-Type", content_type)
+        img_bytes = r.content
+        content_type = r.headers.get("Content-Type", content_type)
     elif isinstance(result, Image.Image):
         buf = io.BytesIO()
         result.save(buf, "PNG")
@@ -75,8 +75,8 @@ def proxy_predict():
     else:
         return jsonify({"error": "Cannot decode enhanced image"}), 500
 
-    # 3) Upload enhanced image
-    enhanced_url = upload_bytes_to_s3(
+    # Step 3: Upload enhanced image with passed-in run_id
+    run_id_final, enhanced_url, _ = upload_main_image(
         data_bytes=img_bytes,
         user_email=user_email,
         enhancements={
@@ -85,10 +85,22 @@ def proxy_predict():
             "text": text,
             "colorization": colorization
         },
-        content_type=content_type
+        content_type=content_type,
+        run_id=run_id  # ✅ Pass in user-provided run_id
     )
-    if not enhanced_url:
+    if not enhanced_url or not run_id_final:
         return jsonify({"error": "S3 upload failed"}), 502
 
-    # 4) Return only the enhanced URL
-    return jsonify({"data": [enhanced_url]}), 200
+    # Step 4: Derive original_url
+    orig_filename = f"original_{run_id_final}.png"
+    user_folder = user_email.replace("@", "_").replace(".", "_")
+    original_url = f"https://{Config.AWS_BUCKET_NAME}.s3.{Config.AWS_REGION}.amazonaws.com/{user_folder}/{orig_filename}"
+
+    # Step 5: Return both URLs and run_id
+    return jsonify({
+        "data": {
+            "original_url": original_url,
+            "enhanced_url": enhanced_url,
+            "run_id": run_id_final
+        }
+    }), 200
