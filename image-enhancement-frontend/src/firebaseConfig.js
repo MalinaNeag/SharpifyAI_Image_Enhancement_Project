@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
-// Ensure environment variables are properly set
+// Load Firebase configuration from environment variables
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
     authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -12,21 +12,22 @@ const firebaseConfig = {
     measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-// Prevent initializing Firebase if config is missing
+// Validate essential Firebase config values
 if (!firebaseConfig.apiKey || !firebaseConfig.authDomain) {
-    throw new Error("Firebase configuration is missing! Check your .env file.");
+    throw new Error("Firebase configuration is missing. Check your .env file.");
 }
 
-// Initialize Firebase App & Authentication
+// Initialize Firebase app and authentication provider
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Get Backend URL dynamically from environment variables
+// Backend URL for API calls, fallback to localhost in development
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
 
 /**
- * Sign in with Google and send token to Flask backend
+ * Sign in with Google and send the Firebase ID token to the Flask backend for verification.
+ * If verification succeeds, set the authenticated user in the frontend state.
  */
 const signInWithGoogle = async (setUser) => {
     try {
@@ -34,9 +35,9 @@ const signInWithGoogle = async (setUser) => {
         const user = result.user;
         const token = await user.getIdToken();
 
-        console.log("✅ Google Login Successful:", user.email);
+        console.log("Google login successful:", user.email);
 
-        // Send token to Flask backend for validation
+        // Send token to backend for validation
         const response = await fetch(`${BACKEND_URL}/auth/verify-token`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -52,9 +53,9 @@ const signInWithGoogle = async (setUser) => {
         console.log("Backend verified user:", data.user);
 
         if (typeof setUser === "function") {
-            setUser(data.user); // Ensure setUser is a function before calling it
+            setUser(data.user);
         } else {
-            console.warn("setUser is not a function, user state not updated.");
+            console.warn("setUser is not a function; user state was not updated.");
         }
 
         return data.user;
@@ -65,7 +66,8 @@ const signInWithGoogle = async (setUser) => {
 };
 
 /**
- * Logout user from Firebase and Flask backend
+ * Sign out the user from both Firebase and the Flask backend.
+ * Clears authentication state and removes session cookies.
  */
 const logout = async (setUser) => {
     try {
@@ -78,7 +80,7 @@ const logout = async (setUser) => {
         });
 
         if (!response.ok) {
-            console.warn("⚠Backend logout may have failed.");
+            console.warn("Backend logout request did not return OK.");
         }
 
         console.log("User logged out.");

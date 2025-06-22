@@ -10,9 +10,7 @@ import {
     Container,
     Card,
     CardContent,
-    Grid,
-    Chip,
-    Divider
+    Grid
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { auth, logout } from "../firebaseConfig";
@@ -26,8 +24,8 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import Gallery from "../components/Gallery";
-import { motion, AnimatePresence } from "framer-motion";
-import { Stars, Logout, PhotoLibrary, Person, Email } from "@mui/icons-material";
+import { motion } from "framer-motion";
+import { Logout, PhotoLibrary, Email } from "@mui/icons-material";
 import { keyframes } from "@mui/system";
 
 const gradientAnimation = keyframes`

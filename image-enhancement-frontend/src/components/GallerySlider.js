@@ -1,5 +1,4 @@
-// src/components/GallerySlider.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 
 export const GallerySlider = ({ before, after }) => {
@@ -8,54 +7,50 @@ export const GallerySlider = ({ before, after }) => {
     const theme = useTheme();
     const darkMode = theme.palette.mode === "dark";
 
-    const handleMove = (clientX) => {
+    // Stable function to handle cursor/touch position
+    const handleMove = useCallback((clientX) => {
         if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const percent = Math.min(Math.max((x / rect.width) * 100, 0), 100);
+        setSliderValue(percent);
+    }, []);
 
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const relativeX = clientX - containerRect.left;
-        const percentage = Math.min(Math.max((relativeX / containerRect.width) * 100, 0), 100);
-        setSliderValue(percentage);
-    };
-
+    // Stable event handlers — no dynamic deps so useEffect won't complain
+    const handleMouseMove = useCallback((e) => handleMove(e.clientX), [handleMove]);
+    const handleMouseUp = useCallback(() => {
+        window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("mouseup", handleMouseUp);
+    }, [handleMouseMove]);
     const handleMouseDown = (e) => {
         handleMove(e.clientX);
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mouseup", handleMouseUp);
     };
 
-    const handleMouseMove = (e) => {
-        handleMove(e.clientX);
-    };
-
-    const handleMouseUp = () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    const handleTouchStart = (e) => {
-        handleMove(e.touches[0].clientX);
-        window.addEventListener('touchmove', handleTouchMove);
-        window.addEventListener('touchend', handleTouchEnd);
-    };
-
-    const handleTouchMove = (e) => {
+    const handleTouchMove = useCallback((e) => {
         e.preventDefault();
         handleMove(e.touches[0].clientX);
+    }, [handleMove]);
+    const handleTouchEnd = useCallback(() => {
+        window.removeEventListener("touchmove", handleTouchMove);
+        window.removeEventListener("touchend", handleTouchEnd);
+    }, [handleTouchMove]);
+    const handleTouchStart = (e) => {
+        handleMove(e.touches[0].clientX);
+        window.addEventListener("touchmove", handleTouchMove, { passive: false });
+        window.addEventListener("touchend", handleTouchEnd);
     };
 
-    const handleTouchEnd = () => {
-        window.removeEventListener('touchmove', handleTouchMove);
-        window.removeEventListener('touchend', handleTouchEnd);
-    };
-
+    // Clean up event listeners on unmount
     useEffect(() => {
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-            window.removeEventListener('touchmove', handleTouchMove);
-            window.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+            window.removeEventListener("touchmove", handleTouchMove);
+            window.removeEventListener("touchend", handleTouchEnd);
         };
-    }, []);
+    }, [handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
     return (
         <Box
@@ -67,10 +62,10 @@ export const GallerySlider = ({ before, after }) => {
                 overflow: "hidden",
                 borderRadius: 2,
                 boxShadow: theme.shadows[4],
-                touchAction: 'none'
+                touchAction: "none",
             }}
         >
-            {/* Original Image (left side) */}
+            {/* Left side: original image */}
             <Box
                 component="img"
                 src={before}
@@ -83,12 +78,11 @@ export const GallerySlider = ({ before, after }) => {
                     height: "100%",
                     objectFit: "contain",
                     zIndex: 1,
-                    userSelect: 'none',
-                    pointerEvents: 'none'
+                    userSelect: "none",
+                    pointerEvents: "none",
                 }}
             />
-
-            {/* Enhanced Image (right side) */}
+            {/* Right side: enhanced image clipped to slider */}
             <Box
                 component="img"
                 src={after}
@@ -102,12 +96,11 @@ export const GallerySlider = ({ before, after }) => {
                     objectFit: "contain",
                     clipPath: `polygon(${sliderValue}% 0, 100% 0, 100% 100%, ${sliderValue}% 100%)`,
                     zIndex: 2,
-                    userSelect: 'none',
-                    pointerEvents: 'none'
+                    userSelect: "none",
+                    pointerEvents: "none",
                 }}
             />
-
-            {/* Slider Handle - Only drag control */}
+            {/* Slider drag handle */}
             <Box
                 onMouseDown={handleMouseDown}
                 onTouchStart={handleTouchStart}
@@ -131,14 +124,10 @@ export const GallerySlider = ({ before, after }) => {
                         borderRadius: "50%",
                         bgcolor: darkMode ? "#ff5252" : "#3f51b5",
                         transform: "translate(-50%, -50%)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
                         boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
                     },
                 }}
             />
-
             {/* Labels */}
             <Box
                 sx={{

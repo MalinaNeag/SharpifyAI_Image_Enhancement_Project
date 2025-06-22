@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { AppBar, Toolbar, Typography, IconButton, Box, Drawer, List, ListItem, ListItemText, Menu, MenuItem } from "@mui/material";
+import {
+    AppBar, Toolbar, Typography, IconButton, Box, Drawer, List,
+    ListItem, ListItemText, Menu, MenuItem
+} from "@mui/material";
 import { AccountCircle, Menu as MenuIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { auth, logout } from "../firebaseConfig";
@@ -8,28 +11,33 @@ import GoogleLoginModal from "./GoogleLoginModal";
 import DarkModeToggle from "./DarkModeToggle";
 import logo from "../resources/logo.png";
 
+// Top navigation bar component with authentication and theme control
 const NavBar = ({ darkMode, setDarkMode }) => {
-    const [user, setUser] = useState(null);
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [loginModalOpen, setLoginModalOpen] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
+    const [user, setUser] = useState(null); // Firebase user state
+    const [menuOpen, setMenuOpen] = useState(false); // Mobile drawer open/close
+    const [loginModalOpen, setLoginModalOpen] = useState(false); // Google login modal
+    const [anchorEl, setAnchorEl] = useState(null); // Anchor for dropdown menu
     const navigate = useNavigate();
 
+    // Watch for Firebase authentication changes
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
         });
-        return () => unsubscribe();
+        return () => unsubscribe(); // Cleanup on unmount
     }, []);
 
+    // Open user menu (avatar dropdown)
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
+    // Close user menu
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
 
+    // Logout logic + redirect to homepage
     const handleLogout = async () => {
         await logout(setUser);
         navigate("/");
@@ -38,16 +46,17 @@ const NavBar = ({ darkMode, setDarkMode }) => {
 
     return (
         <>
+            {/* AppBar with blur + responsive layout */}
             <AppBar
                 position="fixed"
                 sx={{
                     background: darkMode ? "rgba(15, 15, 15, 0.35)" : "rgba(255, 255, 255, 0.35)",
                     backdropFilter: "blur(6px)",
                     boxShadow: "none",
-                    transition: "background 0.3s ease-in-out",
                     height: "70px",
                     display: "flex",
                     justifyContent: "center",
+                    transition: "background 0.3s ease-in-out",
                 }}
             >
                 <Toolbar
@@ -59,19 +68,18 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                         flexWrap: "wrap",
                     }}
                 >
-                    {/* Left Menu Button (Mobile Only) */}
+                    {/* Left hamburger menu icon (visible on small screens) */}
                     <IconButton
                         onClick={() => setMenuOpen(true)}
                         sx={{
                             display: { xs: "block", md: "none" },
                             color: darkMode ? "#F5F5F5" : "#000",
-                            alignSelf: "center",
                         }}
                     >
                         <MenuIcon sx={{ fontSize: 24 }} />
                     </IconButton>
 
-                    {/* App Logo and Name */}
+                    {/* Logo + App name (clickable) */}
                     <Box
                         onClick={() => navigate("/")}
                         sx={{
@@ -79,7 +87,6 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                             alignItems: "center",
                             gap: 1.5,
                             cursor: "pointer",
-                            height: "100%",
                         }}
                     >
                         <Box
@@ -87,7 +94,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                             src={logo}
                             alt="SharpifyAI Logo"
                             sx={{
-                                height: { xs: 40, sm: 40, md: 40 },
+                                height: 40,
                                 width: "auto",
                                 objectFit: "contain",
                                 filter: darkMode ? "brightness(0) invert(1)" : "none",
@@ -108,9 +115,9 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                         </Typography>
                     </Box>
 
-                    {/* Right Section: Profile/Login | Dark Mode */}
+                    {/* Right side: Auth controls + Dark Mode */}
                     <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 } }}>
-                        {/* Profile / Login */}
+                        {/* Authenticated: Show profile avatar + menu */}
                         {user ? (
                             <>
                                 <Box
@@ -121,7 +128,9 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                         backgroundColor: darkMode ? "#222" : "#fff",
                                         padding: { xs: "5px", sm: "6px 12px" },
                                         borderRadius: "30px",
-                                        boxShadow: darkMode ? "0px 3px 8px rgba(255, 255, 255, 0.1)" : "0px 3px 8px rgba(0,0,0,0.1)",
+                                        boxShadow: darkMode
+                                            ? "0px 3px 8px rgba(255, 255, 255, 0.1)"
+                                            : "0px 3px 8px rgba(0,0,0,0.1)",
                                         cursor: "pointer",
                                         transition: "0.3s",
                                         "&:hover": { transform: "scale(1.05)" },
@@ -140,18 +149,14 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                         {user.displayName?.split(" ")[0]}'s Profile
                                     </Typography>
                                 </Box>
+
+                                {/* Dropdown menu for authenticated user */}
                                 <Menu
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
                                     onClose={handleMenuClose}
-                                    anchorOrigin={{
-                                        vertical: "bottom",
-                                        horizontal: "center",
-                                    }}
-                                    transformOrigin={{
-                                        vertical: "top",
-                                        horizontal: "center",
-                                    }}
+                                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                                    transformOrigin={{ vertical: "top", horizontal: "center" }}
                                     sx={{
                                         mt: 1,
                                         "& .MuiPaper-root": {
@@ -159,35 +164,41 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                             minWidth: "150px",
                                             boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
                                             backdropFilter: "blur(8px)",
-                                            backgroundColor: darkMode ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.8)",
+                                            backgroundColor: darkMode
+                                                ? "rgba(255, 255, 255, 0.1)"
+                                                : "rgba(255, 255, 255, 0.8)",
                                             color: darkMode ? "#F5F5F5" : "#000",
                                         },
                                     }}
                                 >
                                     <MenuItem
+                                        onClick={() => {
+                                            navigate("/profile");
+                                            handleMenuClose();
+                                        }}
                                         sx={{
                                             fontSize: "14px",
                                             fontWeight: 500,
                                             "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.05)" },
                                         }}
-                                        onClick={() => { navigate("/profile"); handleMenuClose(); }}
                                     >
                                         Profile
                                     </MenuItem>
                                     <MenuItem
+                                        onClick={handleLogout}
                                         sx={{
                                             fontSize: "14px",
                                             fontWeight: 500,
                                             color: "#D32F2F",
                                             "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" },
                                         }}
-                                        onClick={handleLogout}
                                     >
                                         Logout
                                     </MenuItem>
                                 </Menu>
                             </>
                         ) : (
+                            // Unauthenticated: Show login button (avatar only)
                             <Box
                                 onClick={() => setLoginModalOpen(true)}
                                 sx={{
@@ -196,7 +207,9 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                                     backgroundColor: darkMode ? "#222" : "#fff",
                                     padding: { xs: "5px 10px", sm: "6px 12px" },
                                     borderRadius: "30px",
-                                    boxShadow: darkMode ? "0px 3px 8px rgba(255, 255, 255, 0.1)" : "0px 3px 8px rgba(0,0,0,0.1)",
+                                    boxShadow: darkMode
+                                        ? "0px 3px 8px rgba(255, 255, 255, 0.1)"
+                                        : "0px 3px 8px rgba(0,0,0,0.1)",
                                     cursor: "pointer",
                                     transition: "0.3s",
                                     "&:hover": { transform: "scale(1.05)" },
@@ -206,13 +219,13 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                             </Box>
                         )}
 
-                        {/* Dark Mode Toggle */}
+                        {/* Dark/light mode toggle */}
                         <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
                     </Box>
                 </Toolbar>
             </AppBar>
 
-            {/* Mobile Sidebar Drawer */}
+            {/* Mobile drawer with route links */}
             <Drawer anchor="left" open={menuOpen} onClose={() => setMenuOpen(false)}>
                 <Box sx={{ width: 250, padding: 2 }}>
                     <List>
@@ -232,7 +245,7 @@ const NavBar = ({ darkMode, setDarkMode }) => {
                 </Box>
             </Drawer>
 
-            {/* Login Modal */}
+            {/* Google login modal (appears if not authenticated) */}
             <GoogleLoginModal open={loginModalOpen} onClose={() => setLoginModalOpen(false)} />
         </>
     );

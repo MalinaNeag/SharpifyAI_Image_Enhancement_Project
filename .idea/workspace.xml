@@ -6,10 +6,22 @@
   <component name="ChangeListManager">
     <list default="true" id="33cbcf19-0a06-4144-8f20-ac1ddbf6ac92" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/routes/enhance_proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/routes/enhance_proxy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/routes/gallery.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/routes/gallery.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/routes/upload.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/routes/upload.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/image-enhancement-backend/services/s3_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-backend/services/s3_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/CreditsModal.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GalleryContainer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GalleryContainer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GallerySlider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GallerySlider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GoldButton.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/NavBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/NavBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/SubscriptionModal.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/ThemeProviderWrapper.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/ThemeProviderWrapper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/firebaseConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/firebaseConfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/ProfilePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/ProfilePage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/WelcomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/WelcomeScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/resources/image.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/resources/initial.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/services/fileUploadService.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/services/fileUploadService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/services/galleryService.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/services/galleryService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,7 +133,7 @@
       <workItem from="1749556695314" duration="22729000" />
       <workItem from="1749919017272" duration="5334000" />
       <workItem from="1750022004255" duration="10000" />
-      <workItem from="1750101645852" duration="30299000" />
+      <workItem from="1750101645852" duration="32205000" />
     </task>
     <servers />
   </component>
