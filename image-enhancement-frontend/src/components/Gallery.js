@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// src/components/Gallery.jsx
+import React, { useState, useEffect } from "react";
 import {
     Grid,
     Card,
@@ -15,7 +16,11 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import DownloadIcon from "@mui/icons-material/Download";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CompareIcon from "@mui/icons-material/Compare";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { motion } from "framer-motion";
+import { GallerySlider } from "./GallerySlider";
 
 const enhancementLabels = {
     face: "😊 Face",
@@ -24,31 +29,86 @@ const enhancementLabels = {
     colorization: "🎨 Colorization",
 };
 
-const Gallery = ({ images, onRemove }) => {
+export default function Gallery({ images, onRemove }) {
     const theme = useTheme();
     const darkMode = theme.palette.mode === "dark";
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [confirmDelete, setConfirmDelete] = useState(null);
 
-    const handleOpen = (image) => setSelectedImage(image);
-    const handleClose = () => setSelectedImage(null);
-    const handleConfirmDelete = (image) => setConfirmDelete(image);
+    const [selectedIndex, setSelectedIndex] = useState(null);
+    const [confirmDel, setConfirmDel] = useState(null);
+    const [compareMode, setCompareMode] = useState(false);
+    const [pairedImages, setPairedImages] = useState([]);
 
-    const handleDownload = (imgUrl) => {
-        const link = document.createElement("a");
-        link.href = imgUrl;
-        link.download = `Enhanced_Image_${Date.now()}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    // Group original and enhanced images
+    useEffect(() => {
+        const pairs = {};
+
+        images.forEach(img => {
+            const urlParts = img.url.split('/');
+            const filename = urlParts[urlParts.length - 1];
+            const match = filename.match(/^(original|enhanced)_([a-f0-9]+)\./);
+
+            if (!match) return;
+
+            const type = match[1];
+            const runId = match[2];
+
+            if (!pairs[runId]) {
+                pairs[runId] = {};
+            }
+
+            pairs[runId][type] = img;
+            pairs[runId].runId = runId;
+        });
+
+        setPairedImages(Object.values(pairs).filter(pair => pair.original && pair.enhanced));
+    }, [images]);
+
+    const open = (index) => setSelectedIndex(index);
+    const close = () => {
+        setSelectedIndex(null);
+        setCompareMode(false);
+    };
+
+    const navigate = (direction) => {
+        if (direction === 'prev') {
+            setSelectedIndex(prev => (prev === 0 ? pairedImages.length - 1 : prev - 1));
+        } else {
+            setSelectedIndex(prev => (prev === pairedImages.length - 1 ? 0 : prev + 1));
+        }
+    };
+
+    const askDel = (img) => setConfirmDel(img);
+
+    const download = (url) => {
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = blobUrl;
+                a.download = `enhanced_${pairedImages[selectedIndex].runId}.png`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(blobUrl);
+                document.body.removeChild(a);
+            })
+            .catch(() => {
+                // Fallback if fetch fails
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `enhanced_${pairedImages[selectedIndex]?.runId || Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
     };
 
     return (
         <Box sx={{ mt: 4, px: { xs: 2, sm: 3, md: 6 } }}>
-            {images.length > 0 ? (
+            {pairedImages.length > 0 ? (
                 <Grid container spacing={2} justifyContent="center">
-                    {images.map((image, index) => (
-                        <Grid item xs={6} sm={4} md={3} key={index}>
+                    {pairedImages.map((pair, i) => (
+                        <Grid key={pair.runId || i} item xs={6} sm={4} md={3}>
                             <motion.div whileHover={{ scale: 1.03 }}>
                                 <Card
                                     sx={{
@@ -63,53 +123,73 @@ const Gallery = ({ images, onRemove }) => {
                                 >
                                     <CardMedia
                                         component="img"
-                                        image={image.url}
-                                        alt={`Uploaded ${index}`}
-                                        onClick={() => handleOpen(image)}
+                                        image={pair.enhanced.url}
+                                        onClick={() => open(i)}
                                         sx={{
                                             width: "100%",
-                                            aspectRatio: "1 / 1",
+                                            aspectRatio: "1/1",
                                             objectFit: "cover",
                                         }}
                                     />
 
-                                    {image.enhancements?.length > 0 && (
-                                        <Box
-                                            sx={{
-                                                position: "absolute",
-                                                bottom: 0,
-                                                left: 0,
-                                                width: "100%",
-                                                display: "flex",
-                                                flexWrap: "wrap",
-                                                gap: 0.5,
-                                                p: 1,
-                                                bgcolor: "rgba(0,0,0,0.4)",
-                                            }}
-                                        >
-                                            {image.enhancements.map((enh, i) => (
-                                                <Typography
-                                                    key={i}
-                                                    variant="caption"
-                                                    sx={{
-                                                        color: "#fff",
-                                                        borderRadius: 2,
-                                                        px: 0.8,
-                                                        py: 0.3,
-                                                        fontSize: "0.7rem",
-                                                    }}
-                                                >
-                                                    {enhancementLabels[enh] || enh}
-                                                </Typography>
-                                            ))}
-                                        </Box>
-                                    )}
+                                    <Box
+                                        sx={{
+                                            position: "absolute",
+                                            bottom: 0,
+                                            left: 0,
+                                            width: "100%",
+                                            p: 1,
+                                            display: "flex",
+                                            flexWrap: "wrap",
+                                            gap: 0.5,
+                                            bgcolor: "rgba(0,0,0,0.4)",
+                                        }}
+                                    >
+                                        {pair.enhanced.enhancements?.map((e, j) => (
+                                            <Typography
+                                                key={j}
+                                                variant="caption"
+                                                sx={{
+                                                    color: "#fff",
+                                                    borderRadius: 2,
+                                                    px: 0.8,
+                                                    py: 0.3,
+                                                    fontSize: "0.7rem",
+                                                }}
+                                            >
+                                                {enhancementLabels[e] || e}
+                                            </Typography>
+                                        ))}
+                                    </Box>
 
-                                    <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-                                        <Tooltip title="Remove">
+                                    <Box sx={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 1 }}>
+                                        <Tooltip title="Compare with original">
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handleConfirmDelete(image)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    open(i);
+                                                    setCompareMode(true);
+                                                }}
+                                                sx={{
+                                                    bgcolor: "rgba(255,255,255,0.7)",
+                                                    "&:hover": {
+                                                        bgcolor: "rgba(29, 233, 182, 0.9)",
+                                                        color: "#fff",
+                                                    },
+                                                }}
+                                            >
+                                                <CompareIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+
+                                        <Tooltip title="Delete">
+                                            <IconButton
+                                                size="small"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    askDel(pair.enhanced);
+                                                }}
                                                 sx={{
                                                     bgcolor: "rgba(255,255,255,0.7)",
                                                     "&:hover": {
@@ -128,36 +208,82 @@ const Gallery = ({ images, onRemove }) => {
                     ))}
                 </Grid>
             ) : (
-                <Typography variant="body1" sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}>
-                    No images uploaded yet.
+                <Typography
+                    variant="body1"
+                    sx={{ mt: 3, textAlign: "center", color: "text.secondary" }}
+                >
+                    No enhanced images available yet.
                 </Typography>
             )}
 
-            {/* Modal */}
-            <Dialog open={Boolean(selectedImage)} onClose={handleClose} maxWidth="sm" fullWidth>
-                <Box sx={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 1 }}>
-                    <Tooltip title="Download">
+            <Dialog
+                open={selectedIndex !== null}
+                onClose={close}
+                maxWidth="md"
+                fullWidth
+                sx={{
+                    '& .MuiDialog-paper': {
+                        bgcolor: darkMode ? 'background.default' : 'background.paper',
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                        maxHeight: '90vh'
+                    }
+                }}
+            >
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        display: "flex",
+                        gap: 1,
+                        zIndex: 10,
+                    }}
+                >
+                    <Tooltip title="Download enhanced">
                         <IconButton
-                            onClick={() => handleDownload(selectedImage?.url)}
+                            onClick={() => download(pairedImages[selectedIndex]?.enhanced.url)}
                             sx={{
                                 bgcolor: darkMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)",
                                 color: darkMode ? "#fff" : "#000",
                                 "&:hover": {
-                                    bgcolor: darkMode ? "rgba(0,0,0,0.8)" : "rgba(255,255,255,1)",
+                                    bgcolor: darkMode
+                                        ? "rgba(0,0,0,0.8)"
+                                        : "rgba(255,255,255,1)",
                                 },
                             }}
                         >
                             <DownloadIcon />
                         </IconButton>
                     </Tooltip>
+                    <Tooltip title={compareMode ? "Exit compare mode" : "Compare with original"}>
+                        <IconButton
+                            onClick={() => setCompareMode(!compareMode)}
+                            sx={{
+                                bgcolor: compareMode
+                                    ? darkMode ? "rgba(29, 233, 182, 0.9)" : "rgba(29, 196, 233, 0.9)"
+                                    : darkMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)",
+                                color: compareMode ? "#fff" : darkMode ? "#fff" : "#000",
+                                "&:hover": {
+                                    bgcolor: compareMode
+                                        ? darkMode ? "rgba(29, 233, 182, 0.7)" : "rgba(29, 196, 233, 0.7)"
+                                        : darkMode ? "rgba(0,0,0,0.8)" : "rgba(255,255,255,1)",
+                                },
+                            }}
+                        >
+                            <CompareIcon />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title="Close">
                         <IconButton
-                            onClick={handleClose}
+                            onClick={close}
                             sx={{
                                 bgcolor: darkMode ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)",
                                 color: darkMode ? "#fff" : "#000",
                                 "&:hover": {
-                                    bgcolor: darkMode ? "rgba(0,0,0,0.8)" : "rgba(255,255,255,1)",
+                                    bgcolor: darkMode
+                                        ? "rgba(0,0,0,0.8)"
+                                        : "rgba(255,255,255,1)",
                                 },
                             }}
                         >
@@ -166,64 +292,140 @@ const Gallery = ({ images, onRemove }) => {
                     </Tooltip>
                 </Box>
 
-                <DialogContent sx={{ p: 2, textAlign: "center" }}>
-                    {selectedImage && (
-                        <>
-                            <img
-                                src={selectedImage.url}
-                                alt="Selected"
-                                style={{
-                                    width: "100%",
-                                    maxHeight: "70vh",
-                                    borderRadius: "8px",
+                {/* Navigation Arrows */}
+                {pairedImages.length > 1 && (
+                    <>
+                        <IconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('prev');
+                            }}
+                            sx={{
+                                position: "absolute",
+                                left: 16,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                zIndex: 10,
+                                bgcolor: "rgba(0,0,0,0.4)",
+                                color: "#fff",
+                                "&:hover": {
+                                    bgcolor: "rgba(0,0,0,0.7)",
+                                },
+                            }}
+                        >
+                            <ArrowBackIosIcon />
+                        </IconButton>
+                        <IconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('next');
+                            }}
+                            sx={{
+                                position: "absolute",
+                                right: 16,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                zIndex: 10,
+                                bgcolor: "rgba(0,0,0,0.4)",
+                                color: "#fff",
+                                "&:hover": {
+                                    bgcolor: "rgba(0,0,0,0.7)",
+                                },
+                            }}
+                        >
+                            <ArrowForwardIosIcon />
+                        </IconButton>
+                    </>
+                )}
+
+                <DialogContent
+                    sx={{
+                        p: 0,
+                        textAlign: "center",
+                        height: "70vh",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        bgcolor: darkMode ? 'background.default' : 'background.paper'
+                    }}
+                >
+                    {selectedIndex !== null && pairedImages[selectedIndex] && (
+                        compareMode ? (
+                            <GallerySlider
+                                before={pairedImages[selectedIndex].original.url}
+                                after={pairedImages[selectedIndex].enhanced.url}
+                            />
+                        ) : (
+                            <Box
+                                component="img"
+                                src={pairedImages[selectedIndex].enhanced.url}
+                                alt="Enhanced"
+                                sx={{
+                                    maxWidth: "100%",
+                                    maxHeight: "100%",
                                     objectFit: "contain",
                                 }}
                             />
-
-                            {selectedImage.enhancements?.length > 0 && (
-                                <Box sx={{ mt: 2 }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
-                                        ✨ Enhancements Applied:
-                                    </Typography>
-                                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}>
-                                        {selectedImage.enhancements.map((enh, i) => (
-                                            <Typography
-                                                key={i}
-                                                variant="caption"
-                                                sx={{
-                                                    bgcolor: darkMode ? "#333" : "#ddd",
-                                                    px: 1.5,
-                                                    py: 0.5,
-                                                    borderRadius: 2,
-                                                }}
-                                            >
-                                                {enhancementLabels[enh] || enh}
-                                            </Typography>
-                                        ))}
-                                    </Box>
-                                </Box>
-                            )}
-                        </>
+                        )
                     )}
                 </DialogContent>
+
+                {/* Image Counter */}
+                {pairedImages.length > 1 && (
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            bottom: 16,
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            zIndex: 10,
+                            bgcolor: "rgba(0,0,0,0.6)",
+                            color: "#fff",
+                            px: 2,
+                            py: 1,
+                            borderRadius: 2,
+                        }}
+                    >
+                        <Typography variant="body2">
+                            {selectedIndex + 1} / {pairedImages.length}
+                        </Typography>
+                    </Box>
+                )}
             </Dialog>
 
-            {/* Delete Confirmation */}
-            <Dialog open={Boolean(confirmDelete)} onClose={() => setConfirmDelete(null)}>
+            <Dialog open={!!confirmDel} onClose={() => setConfirmDel(null)}>
                 <DialogContent sx={{ textAlign: "center", py: 3 }}>
-                    <Typography variant="h6">Are you sure you want to delete this image?</Typography>
-                    <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
+                    <Typography variant="h6">
+                        Are you sure you want to delete this image?
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                        This will remove both the original and enhanced versions.
+                    </Typography>
+                    <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
                         <Button
                             variant="contained"
                             color="error"
-                            onClick={() => {
-                                onRemove(confirmDelete.url);
-                                setConfirmDelete(null);
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                const pair = pairedImages.find(p => p.enhanced.url === confirmDel.url);
+                                if (pair) {
+                                    onRemove(pair.original.url);
+                                    onRemove(pair.enhanced.url);
+                                }
+                                setConfirmDel(null);
+                                if (selectedIndex !== null) {
+                                    close();
+                                }
                             }}
+                            sx={{ px: 3 }}
                         >
                             Delete
                         </Button>
-                        <Button variant="outlined" onClick={() => setConfirmDelete(null)}>
+                        <Button
+                            onClick={() => setConfirmDel(null)}
+                            variant="outlined"
+                            sx={{ px: 3 }}
+                        >
                             Cancel
                         </Button>
                     </Box>
@@ -231,6 +433,4 @@ const Gallery = ({ images, onRemove }) => {
             </Dialog>
         </Box>
     );
-};
-
-export default Gallery;
+}

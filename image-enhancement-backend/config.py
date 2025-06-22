@@ -20,7 +20,7 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY", "default_secret_key")
 
-    # 🔹 Add Firebase API Key
+    # Add Firebase API Key
     FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY")
 
     if not FIREBASE_API_KEY:
@@ -31,6 +31,7 @@ class Config:
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
     GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
     GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
+    GRADIO_URL = os.getenv("GRADIO_URL", "https://cb46c50c95c6136918.gradio.live")
 
     # Ensure the upload directory exists
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)

@@ -1,51 +1,53 @@
-/* Reset default margins & set global font */
+/* Reset default browser margin and apply a global system font stack */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Remove unnecessary root variables (handled by MUI theme) */
+/* Root variables (custom properties) — currently unused but can support theme toggling */
 :root {
-  --text-color: #000000;
+  --text-color: #000000; /* Light mode default text color */
 }
 
 [data-theme="dark"] {
-  --text-color: #FFFFFF;
+  --text-color: #FFFFFF; /* Override text color in dark mode */
 }
 
-/* Global app layout */
+/* Primary app container styling */
 .App {
   text-align: center;
-  padding: 0 16px; /* Padding for smaller screens */
+  padding: 0 16px; /* Horizontal padding for mobile spacing */
 }
 
-/* Improve text readability */
+/* Ensure consistent heading appearance across devices */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   margin: 0;
 }
 
+/* Improve paragraph readability with consistent line spacing */
 p {
   margin: 0;
   line-height: 1.6;
 }
 
-/* Responsive font scaling */
+/* Adjust base font size on tablets */
 @media (max-width: 768px) {
   .App {
     font-size: 14px;
   }
 }
 
+/* Further reduce font size on small mobile screens */
 @media (max-width: 480px) {
   .App {
     font-size: 12px;
   }
 }
 
-/* Remove unnecessary React default styles */
+/* Hide default React scaffolded elements not used in production */
 .App-header,
 .App-logo,
 .App-link {
-  display: none; /* No longer needed */
+  display: none;
 }

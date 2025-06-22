@@ -7,6 +7,7 @@
     "@aws-sdk/s3-request-presigner": "^3.758.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@gradio/client": "^1.15.0",
     "@mui/icons-material": "^6.4.4",
     "@mui/material": "^6.4.4",
     "@types/react": "^19.0.2",
@@ -50,5 +51,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

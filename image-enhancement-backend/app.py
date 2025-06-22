@@ -4,9 +4,10 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from config import Config
 from routes.upload import upload_bp
-from routes.enhance import enhance_bp
 from routes.health import health_bp
 from routes.auth import auth_bp
+from routes.enhance_proxy import enhance_proxy
+from routes.gallery import gallery_bp
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -26,9 +27,10 @@ logger = logging.getLogger(__name__)
 
 # Register Blueprints
 app.register_blueprint(upload_bp)
-app.register_blueprint(enhance_bp)
 app.register_blueprint(health_bp)
 app.register_blueprint(auth_bp)
+app.register_blueprint(enhance_proxy)
+app.register_blueprint(gallery_bp)
 
 logger.info("Backend initialized and running!")
 

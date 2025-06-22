@@ -5,7 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="33cbcf19-0a06-4144-8f20-ac1ddbf6ac92" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/FileUploader.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/FileUploader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/CreditsModal.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GalleryContainer.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GalleryContainer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GallerySlider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GallerySlider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/GoldButton.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/NavBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/NavBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/SubscriptionModal.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/components/ThemeProviderWrapper.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/components/ThemeProviderWrapper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/firebaseConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/firebaseConfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/ProfilePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/ProfilePage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/WelcomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/pages/WelcomeScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/resources/image.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/resources/initial.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/services/fileUploadService.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/services/fileUploadService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/image-enhancement-frontend/src/services/galleryService.js" beforeDir="false" afterPath="$PROJECT_DIR$/image-enhancement-frontend/src/services/galleryService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,7 +38,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="backend-refactorization" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -47,30 +63,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;login&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/malinaneag/Desktop/Licenta/modular-super-res-project/image-enhancement-frontend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.language&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "pipeline__connection",
+    "last_opened_file_path": "/Users/malinaneag/Desktop/Licenta/modular-super-res-project/image-enhancement-frontend/src/resources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "configurable.group.language",
+    "ts.external.directory.path": "/Users/malinaneag/Desktop/Licenta/modular-super-res-project/image-enhancement-frontend/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/image-enhancement-frontend/src/resources" />
       <recent name="$PROJECT_DIR$/image-enhancement-frontend" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/image-enhancement-frontend/src/services" />
-      <recent name="$PROJECT_DIR$/image-enhancement-frontend/src" />
       <recent name="$PROJECT_DIR$/image-enhancement-frontend/src/resources" />
+      <recent name="$PROJECT_DIR$/image-enhancement-frontend/src" />
+      <recent name="$PROJECT_DIR$/image-enhancement-frontend/src/services" />
       <recent name="$PROJECT_DIR$/image-enhancement-frontend/src/Drafts" />
     </key>
   </component>
@@ -101,6 +119,21 @@
       <workItem from="1741190165409" duration="653000" />
       <workItem from="1741591745245" duration="18634000" />
       <workItem from="1742117063421" duration="12495000" />
+      <workItem from="1748182560414" duration="24500000" />
+      <workItem from="1748775099669" duration="756000" />
+      <workItem from="1748812567170" duration="3222000" />
+      <workItem from="1748861511815" duration="599000" />
+      <workItem from="1748978318095" duration="366000" />
+      <workItem from="1749024126536" duration="1912000" />
+      <workItem from="1749070386903" duration="648000" />
+      <workItem from="1749076357292" duration="60000" />
+      <workItem from="1749079736601" duration="607000" />
+      <workItem from="1749372900585" duration="2116000" />
+      <workItem from="1749416933584" duration="14000" />
+      <workItem from="1749556695314" duration="22729000" />
+      <workItem from="1749919017272" duration="5334000" />
+      <workItem from="1750022004255" duration="10000" />
+      <workItem from="1750101645852" duration="32205000" />
     </task>
     <servers />
   </component>
