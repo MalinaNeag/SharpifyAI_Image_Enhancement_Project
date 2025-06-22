@@ -12,6 +12,7 @@ import {
     Tooltip,
     Button,
     useTheme,
+    useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -32,6 +33,7 @@ const enhancementLabels = {
 export default function Gallery({ images, onRemove }) {
     const theme = useTheme();
     const darkMode = theme.palette.mode === "dark";
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [confirmDel, setConfirmDel] = useState(null);
@@ -104,12 +106,12 @@ export default function Gallery({ images, onRemove }) {
     };
 
     return (
-        <Box sx={{ mt: 4, px: { xs: 2, sm: 3, md: 6 } }}>
+        <Box sx={{ mt: 4, px: { xs: 1, sm: 3, md: 6 } }}>
             {pairedImages.length > 0 ? (
-                <Grid container spacing={2} justifyContent="center">
+                <Grid container spacing={isSmallScreen ? 1 : 2} justifyContent="center">
                     {pairedImages.map((pair, i) => (
                         <Grid key={pair.runId || i} item xs={6} sm={4} md={3}>
-                            <motion.div whileHover={{ scale: 1.03 }}>
+                            <motion.div whileHover={{ scale: isSmallScreen ? 1 : 1.03 }}>
                                 <Card
                                     sx={{
                                         position: "relative",
@@ -138,10 +140,10 @@ export default function Gallery({ images, onRemove }) {
                                             bottom: 0,
                                             left: 0,
                                             width: "100%",
-                                            p: 1,
+                                            p: 0.5,
                                             display: "flex",
                                             flexWrap: "wrap",
-                                            gap: 0.5,
+                                            gap: 0.3,
                                             bgcolor: "rgba(0,0,0,0.4)",
                                         }}
                                     >
@@ -152,9 +154,9 @@ export default function Gallery({ images, onRemove }) {
                                                 sx={{
                                                     color: "#fff",
                                                     borderRadius: 2,
-                                                    px: 0.8,
-                                                    py: 0.3,
-                                                    fontSize: "0.7rem",
+                                                    px: 0.6,
+                                                    py: 0.1,
+                                                    fontSize: isSmallScreen ? "0.6rem" : "0.7rem",
                                                 }}
                                             >
                                                 {enhancementLabels[e] || e}
@@ -162,7 +164,7 @@ export default function Gallery({ images, onRemove }) {
                                         ))}
                                     </Box>
 
-                                    <Box sx={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 1 }}>
+                                    <Box sx={{ position: "absolute", top: 4, right: 4, display: "flex", gap: 0.5 }}>
                                         <Tooltip title="Compare with original">
                                             <IconButton
                                                 size="small"
@@ -179,7 +181,7 @@ export default function Gallery({ images, onRemove }) {
                                                     },
                                                 }}
                                             >
-                                                <CompareIcon fontSize="small" />
+                                                <CompareIcon fontSize={isSmallScreen ? "small" : "medium"} />
                                             </IconButton>
                                         </Tooltip>
 
@@ -198,7 +200,7 @@ export default function Gallery({ images, onRemove }) {
                                                     },
                                                 }}
                                             >
-                                                <DeleteIcon fontSize="small" />
+                                                <DeleteIcon fontSize={isSmallScreen ? "small" : "medium"} />
                                             </IconButton>
                                         </Tooltip>
                                     </Box>
@@ -221,12 +223,13 @@ export default function Gallery({ images, onRemove }) {
                 onClose={close}
                 maxWidth="md"
                 fullWidth
+                fullScreen={isSmallScreen}
                 sx={{
                     '& .MuiDialog-paper': {
                         bgcolor: darkMode ? 'background.default' : 'background.paper',
-                        borderRadius: 4,
+                        borderRadius: isSmallScreen ? 0 : 4,
                         overflow: 'hidden',
-                        maxHeight: '90vh'
+                        maxHeight: isSmallScreen ? '100vh' : '90vh'
                     }
                 }}
             >
@@ -253,7 +256,7 @@ export default function Gallery({ images, onRemove }) {
                                 },
                             }}
                         >
-                            <DownloadIcon />
+                            <DownloadIcon fontSize={isSmallScreen ? "small" : "medium"} />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title={compareMode ? "Exit compare mode" : "Compare with original"}>
@@ -271,7 +274,7 @@ export default function Gallery({ images, onRemove }) {
                                 },
                             }}
                         >
-                            <CompareIcon />
+                            <CompareIcon fontSize={isSmallScreen ? "small" : "medium"} />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Close">
@@ -287,7 +290,7 @@ export default function Gallery({ images, onRemove }) {
                                 },
                             }}
                         >
-                            <CloseIcon />
+                            <CloseIcon fontSize={isSmallScreen ? "small" : "medium"} />
                         </IconButton>
                     </Tooltip>
                 </Box>
@@ -302,7 +305,7 @@ export default function Gallery({ images, onRemove }) {
                             }}
                             sx={{
                                 position: "absolute",
-                                left: 16,
+                                left: 8,
                                 top: "50%",
                                 transform: "translateY(-50%)",
                                 zIndex: 10,
@@ -311,9 +314,13 @@ export default function Gallery({ images, onRemove }) {
                                 "&:hover": {
                                     bgcolor: "rgba(0,0,0,0.7)",
                                 },
+                                ...(isSmallScreen && {
+                                    left: 4,
+                                    padding: 0.5
+                                })
                             }}
                         >
-                            <ArrowBackIosIcon />
+                            <ArrowBackIosIcon fontSize={isSmallScreen ? "small" : "medium"} />
                         </IconButton>
                         <IconButton
                             onClick={(e) => {
@@ -322,7 +329,7 @@ export default function Gallery({ images, onRemove }) {
                             }}
                             sx={{
                                 position: "absolute",
-                                right: 16,
+                                right: 8,
                                 top: "50%",
                                 transform: "translateY(-50%)",
                                 zIndex: 10,
@@ -331,9 +338,13 @@ export default function Gallery({ images, onRemove }) {
                                 "&:hover": {
                                     bgcolor: "rgba(0,0,0,0.7)",
                                 },
+                                ...(isSmallScreen && {
+                                    right: 4,
+                                    padding: 0.5
+                                })
                             }}
                         >
-                            <ArrowForwardIosIcon />
+                            <ArrowForwardIosIcon fontSize={isSmallScreen ? "small" : "medium"} />
                         </IconButton>
                     </>
                 )}
@@ -342,7 +353,7 @@ export default function Gallery({ images, onRemove }) {
                     sx={{
                         p: 0,
                         textAlign: "center",
-                        height: "70vh",
+                        height: isSmallScreen ? "calc(100vh - 56px)" : "70vh",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -354,6 +365,7 @@ export default function Gallery({ images, onRemove }) {
                             <GallerySlider
                                 before={pairedImages[selectedIndex].original.url}
                                 after={pairedImages[selectedIndex].enhanced.url}
+                                isMobile={isSmallScreen}
                             />
                         ) : (
                             <Box
@@ -393,15 +405,25 @@ export default function Gallery({ images, onRemove }) {
                 )}
             </Dialog>
 
-            <Dialog open={!!confirmDel} onClose={() => setConfirmDel(null)}>
+            <Dialog
+                open={!!confirmDel}
+                onClose={() => setConfirmDel(null)}
+                fullScreen={isSmallScreen}
+            >
                 <DialogContent sx={{ textAlign: "center", py: 3 }}>
-                    <Typography variant="h6">
+                    <Typography variant={isSmallScreen ? "h6" : "h6"}>
                         Are you sure you want to delete this image?
                     </Typography>
                     <Typography variant="body2" sx={{ mt: 1 }}>
                         This will remove both the original and enhanced versions.
                     </Typography>
-                    <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
+                    <Box sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: 2,
+                        mt: 3,
+                        flexDirection: isSmallScreen ? 'column' : 'row'
+                    }}>
                         <Button
                             variant="contained"
                             color="error"
@@ -418,6 +440,7 @@ export default function Gallery({ images, onRemove }) {
                                 }
                             }}
                             sx={{ px: 3 }}
+                            fullWidth={isSmallScreen}
                         >
                             Delete
                         </Button>
@@ -425,6 +448,7 @@ export default function Gallery({ images, onRemove }) {
                             onClick={() => setConfirmDel(null)}
                             variant="outlined"
                             sx={{ px: 3 }}
+                            fullWidth={isSmallScreen}
                         >
                             Cancel
                         </Button>
