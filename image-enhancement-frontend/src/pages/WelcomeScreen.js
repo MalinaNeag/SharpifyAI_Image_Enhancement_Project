@@ -301,19 +301,26 @@ const WelcomeScreen = () => {
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true, margin: "-50px" }}
                                     transition={{ delay: idx * 0.1, duration: 0.5 }}
-                                    style={{ display: "inline-block", width: 280 }}
+                                    style={{ display: "inline-block", minWidth: 280 }}
                                 >
                                     <motion.div
-                                        whileHover={{ y: -8, scale: 1.03 }}
+                                        whileHover={{
+                                            y: -8,
+                                            scale: 1.03
+                                        }}
                                         transition={springConfig}
                                     >
                                         <Card
                                             sx={{
-                                                height: 400,
-                                                display: "flex",
-                                                flexDirection: "column",
                                                 borderRadius: 4,
                                                 overflow: "hidden",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                height: 380,
+                                                width: 280,
+                                                boxShadow: feature.special
+                                                    ? `0 4px 20px rgba(255, 215, 0, 0.3)`
+                                                    : `0 4px 20px ${darkMode ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.1)"}`,
                                                 background: darkMode
                                                     ? "rgba(30,30,40,0.7)"
                                                     : "rgba(255,255,255,0.8)",
@@ -323,44 +330,49 @@ const WelcomeScreen = () => {
                                                         ? "1px solid rgba(255,255,255,0.1)"
                                                         : "1px solid rgba(0,0,0,0.05)",
                                                 backdropFilter: "blur(10px)",
-                                                boxShadow: feature.special
-                                                    ? `0 4px 20px rgba(255, 215, 0, 0.3)`
-                                                    : `0 4px 20px ${darkMode ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.1)"}`,
                                                 transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                                                "&:hover": {
+                                                    boxShadow: feature.special
+                                                        ? `0 8px 30px rgba(255, 215, 0, 0.4)`
+                                                        : `0 8px 30px ${darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.15)"}`
+                                                }
                                             }}
                                         >
-                                            <Box
-                                                sx={{
-                                                    height: 180,
-                                                    position: "relative",
-                                                    background: feature.color
-                                                }}
-                                            >
+                                            <Box sx={{
+                                                height: 180,
+                                                minHeight: 180,
+                                                position: "relative",
+                                                overflow: "hidden",
+                                                background: feature.color
+                                            }}>
                                                 <BeforeAfterSlider
                                                     beforeSrc={feature.before}
                                                     afterSrc={feature.after}
                                                     height="100%"
                                                     width="100%"
-                                                    sx={{ pointerEvents: 'none' }}
-                                                />
-                                                <Box
                                                     sx={{
-                                                        position: "absolute",
-                                                        top: 16,
-                                                        right: 16,
-                                                        width: 48,
-                                                        height: 48,
-                                                        borderRadius: "50%",
-                                                        background: "rgba(255,255,255,0.2)",
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        backdropFilter: "blur(5px)",
-                                                        border: feature.special
-                                                            ? "1px solid rgba(255, 215, 0, 0.7)"
-                                                            : "1px solid rgba(255,255,255,0.3)"
+                                                        pointerEvents: 'none',
+                                                        '&:hover': {
+                                                            cursor: 'default'
+                                                        }
                                                     }}
-                                                >
+                                                />
+                                                <Box sx={{
+                                                    position: "absolute",
+                                                    top: 16,
+                                                    right: 16,
+                                                    width: 48,
+                                                    height: 48,
+                                                    borderRadius: "50%",
+                                                    background: "rgba(255,255,255,0.2)",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    backdropFilter: "blur(5px)",
+                                                    border: feature.special
+                                                        ? "1px solid rgba(255, 215, 0, 0.7)"
+                                                        : "1px solid rgba(255,255,255,0.3)"
+                                                }}>
                                                     {React.cloneElement(feature.icon, {
                                                         sx: {
                                                             color: feature.special ? "#FFD700" : "#FFF",
@@ -371,74 +383,62 @@ const WelcomeScreen = () => {
                                             </Box>
                                             <CardContent
                                                 sx={{
-                                                    flexGrow: 1,
+                                                    p: 3,
                                                     display: "flex",
                                                     flexDirection: "column",
-                                                    justifyContent: "space-between",
-                                                    p: 2,
+                                                    flexGrow: 1,
                                                     textAlign: "left"
                                                 }}
                                             >
-                                                <Typography
-                                                    variant="h6"
-                                                    fontWeight={700}
-                                                    sx={{
-                                                        mb: 1,
-                                                        color: feature.special ? "#FFD700" : darkMode ? "#FFF" : "#000",
-                                                        minHeight: 48
-                                                    }}
-                                                >
-                                                    {feature.title}
-                                                </Typography>
-
-                                                <Typography
-                                                    variant="body2"
-                                                    sx={{
-                                                        color: darkMode ? "#BBB" : "#666",
-                                                        lineHeight: 1.5,
-                                                        display: "-webkit-box",
-                                                        WebkitBoxOrient: "vertical",
-                                                        WebkitLineClamp: 3,
-                                                        overflow: "hidden",
-                                                        textOverflow: "ellipsis",
-                                                        minHeight: 60
-                                                    }}
-                                                >
-                                                    {feature.description}
-                                                </Typography>
-
+                                                <Box sx={{ minHeight: 72, mb: 1.5 }}>
+                                                    <Typography
+                                                        variant="h5"
+                                                        fontWeight={700}
+                                                        sx={{
+                                                            color: feature.special ? "#FFD700" : darkMode ? "#FFF" : "#000",
+                                                        }}
+                                                    >
+                                                        {feature.title}
+                                                    </Typography>
+                                                </Box>
+                                                <Box sx={{ minHeight: 72, mb: 2 }}>
+                                                    <Typography
+                                                        variant="body1"
+                                                        sx={{
+                                                            color: darkMode ? "#BBB" : "#666",
+                                                        }}
+                                                    >
+                                                        {feature.description}
+                                                    </Typography>
+                                                </Box>
                                                 <Box sx={{
-                                                    mt: 2,
+                                                    mt: "auto",
                                                     display: "flex",
                                                     justifyContent: "space-between",
                                                     alignItems: "center"
                                                 }}>
                                                     <ButtonComponent
-                                                        size="small"
+                                                        size="medium"
                                                         endIcon={<ArrowForward />}
                                                         onClick={() => navigate("/upload")}
                                                         sx={{
-                                                            px: 2,
+                                                            px: 3,
                                                             fontWeight: 600,
-                                                            color: feature.special ? "#FFD700" : "inherit",
                                                             background: feature.special
-                                                                ? "linear-gradient(135deg, rgba(255,215,0,0.2), rgba(218,165,32,0.3))"
+                                                                ? "linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(218,165,32,0.3) 100%)"
                                                                 : "inherit",
-                                                            "&:hover": { transform: "translateX(4px)" }
+                                                            color: feature.special ? "#FFD700" : "inherit",
+                                                            transition: "all 0.2s ease",
+                                                            "&:hover": {
+                                                                transform: "translateX(4px)"
+                                                            }
                                                         }}
                                                     >
                                                         Try Now
                                                     </ButtonComponent>
-                                                    <Typography
-                                                        variant="caption"
-                                                        sx={{
-                                                            color: feature.special
-                                                                ? "rgba(255,215,0,0.7)"
-                                                                : darkMode
-                                                                    ? "rgba(255,255,255,0.5)"
-                                                                    : "rgba(0,0,0,0.5)"
-                                                        }}
-                                                    >
+                                                    <Typography variant="caption" sx={{
+                                                        color: feature.special ? "rgba(255,215,0,0.7)" : darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
+                                                    }}>
                                                         {idx + 1}
                                                     </Typography>
                                                 </Box>
@@ -460,14 +460,21 @@ const WelcomeScreen = () => {
                                         viewport={{ once: true, margin: "-50px" }}
                                         transition={{ delay: idx * 0.1, duration: 0.6 }}
                                     >
-                                        <motion.div whileHover={{ y: -8, scale: 1.03 }} transition={springConfig}>
+                                        <motion.div
+                                            whileHover={{
+                                                y: feature.special ? -12 : -8,
+                                                scale: 1.03,
+                                            }}
+                                            transition={springConfig}
+                                        >
                                             <Card
                                                 sx={{
-                                                    height: "100%",
-                                                    display: "flex",
-                                                    flexDirection: "column",
                                                     borderRadius: 4,
                                                     overflow: "hidden",
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    height: "100%",
+                                                    minHeight: 420,
                                                     boxShadow: feature.special
                                                         ? `0 8px 25px rgba(255, 215, 0, 0.3)`
                                                         : `0 8px 25px ${darkMode ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.1)"}`,
@@ -480,61 +487,89 @@ const WelcomeScreen = () => {
                                                             ? "1px solid rgba(255,255,255,0.1)"
                                                             : "1px solid rgba(0,0,0,0.05)",
                                                     backdropFilter: "blur(10px)",
-                                                    transition: "all 0.3s ease"
+                                                    transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
+                                                    "&:hover": {
+                                                        boxShadow: feature.special
+                                                            ? `0 12px 35px rgba(255, 215, 0, 0.4)`
+                                                            : `0 12px 35px ${darkMode ? "rgba(0,0,0,0.3)" : "rgba(0,0,0,0.2)"}`
+                                                    }
                                                 }}
                                             >
-                                                <Box sx={{ height: 200, minHeight: 200, position: "relative" }}>
+                                                <Box sx={{
+                                                    height: 200,
+                                                    minHeight: 200,
+                                                    position: "relative",
+                                                    overflow: "hidden",
+                                                    background: feature.color
+                                                }}>
                                                     <BeforeAfterSlider
                                                         beforeSrc={feature.before}
                                                         afterSrc={feature.after}
                                                         height="100%"
                                                         width="100%"
-                                                        sx={{ pointerEvents: "none" }}
+                                                        sx={{
+                                                            pointerEvents: 'none',
+                                                            '&:hover': {
+                                                                cursor: 'default'
+                                                            }
+                                                        }}
                                                     />
+                                                    <Box sx={{
+                                                        position: "absolute",
+                                                        top: 20,
+                                                        right: 20,
+                                                        width: 56,
+                                                        height: 56,
+                                                        borderRadius: "50%",
+                                                        background: "rgba(255,255,255,0.2)",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        backdropFilter: "blur(5px)",
+                                                        border: feature.special
+                                                            ? "1px solid rgba(255, 215, 0, 0.7)"
+                                                            : "1px solid rgba(255,255,255,0.3)"
+                                                    }}>
+                                                        {React.cloneElement(feature.icon, {
+                                                            sx: {
+                                                                color: feature.special ? "#FFD700" : "#FFF",
+                                                                fontSize: "2rem"
+                                                            }
+                                                        })}
+                                                    </Box>
                                                 </Box>
-
                                                 <CardContent
                                                     sx={{
-                                                        flexGrow: 1,
+                                                        p: 3,
                                                         display: "flex",
                                                         flexDirection: "column",
-                                                        justifyContent: "space-between",
-                                                        p: 3
+                                                        flexGrow: 1,
+                                                        textAlign: "left"
                                                     }}
                                                 >
-                                                    <Typography
-                                                        variant="h5"
-                                                        fontWeight={700}
-                                                        sx={{
-                                                            color: feature.special ? "#FFD700" : darkMode ? "#FFF" : "#000",
-                                                            mb: 1,
-                                                            lineHeight: 1.2,
-                                                            minHeight: 50
-                                                        }}
-                                                    >
-                                                        {feature.title}
-                                                    </Typography>
-
-                                                    <Typography
-                                                        variant="body1"
-                                                        sx={{
-                                                            color: darkMode ? "#BBB" : "#666",
-                                                            fontSize: "0.95rem",
-                                                            lineHeight: 1.4,
-                                                            display: "-webkit-box",
-                                                            WebkitBoxOrient: "vertical",
-                                                            WebkitLineClamp: 3,
-                                                            overflow: "hidden",
-                                                            textOverflow: "ellipsis",
-                                                            minHeight: 66
-                                                        }}
-                                                    >
-                                                        {feature.description}
-                                                    </Typography>
-
+                                                    <Box sx={{ minHeight: 72, mb: 2 }}>
+                                                        <Typography
+                                                            variant="h5"
+                                                            fontWeight={700}
+                                                            sx={{
+                                                                color: feature.special ? "#FFD700" : darkMode ? "#FFF" : "#000",
+                                                            }}
+                                                        >
+                                                            {feature.title}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box sx={{ minHeight: 72, mb: 2 }}>
+                                                        <Typography
+                                                            variant="body1"
+                                                            sx={{
+                                                                color: darkMode ? "#BBB" : "#666",
+                                                            }}
+                                                        >
+                                                            {feature.description}
+                                                        </Typography>
+                                                    </Box>
                                                     <Box sx={{
                                                         mt: "auto",
-                                                        pt: 2,
                                                         display: "flex",
                                                         justifyContent: "space-between",
                                                         alignItems: "center"
@@ -549,12 +584,18 @@ const WelcomeScreen = () => {
                                                                 background: feature.special
                                                                     ? "linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(218,165,32,0.3) 100%)"
                                                                     : "inherit",
-                                                                color: feature.special ? "#FFD700" : "inherit"
+                                                                color: feature.special ? "#FFD700" : "inherit",
+                                                                transition: "all 0.2s ease",
+                                                                "&:hover": {
+                                                                    transform: "translateX(4px)"
+                                                                }
                                                             }}
                                                         >
                                                             Try Now
                                                         </ButtonComponent>
-                                                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                                                        <Typography variant="caption" sx={{
+                                                            color: feature.special ? "rgba(255,215,0,0.7)" : darkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
+                                                        }}>
                                                             {idx + 1}
                                                         </Typography>
                                                     </Box>

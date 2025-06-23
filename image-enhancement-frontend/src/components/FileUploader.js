@@ -18,11 +18,7 @@ import {
   Alert,
   Paper,
   Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
+  Backdrop,
   Button
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -36,7 +32,7 @@ import { auth } from "../firebaseConfig";
 import { uploadAndEnhance } from "../services/fileUploadService";
 import ButtonGlowing from "./ButtonGlowing";
 import Gallery from "./Gallery";
-
+import GoogleLoginModal from "./GoogleLoginModal";
 export default function FileUploader() {
   const theme = useTheme();
   const darkMode = theme.palette.mode === "dark";
@@ -71,8 +67,8 @@ export default function FileUploader() {
   }, []);
 
   // Dropzone
-  const onDrop = (files) => {
-    const f = files[0];
+  const onDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
 
     // Check if user is logged in
     if (!user) {
@@ -82,13 +78,19 @@ export default function FileUploader() {
       return;
     }
 
-    setSelectedFile(f);
-    setPreview(URL.createObjectURL(f));
+    // Validate file type
+    if (!file.type.match('image.*')) {
+      setErrorMessage('Please upload an image file (JPEG, PNG, WEBP)');
+      return;
+    }
+
+    setSelectedFile(file);
+    setPreview(URL.createObjectURL(file));
     setEnhancedImage(null);
     setErrorMessage("");
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: "image/*",
     maxFiles: 1
@@ -180,37 +182,12 @@ export default function FileUploader() {
 
   return (
       <Box sx={{ maxWidth: 1200, mx: "auto", my: 4 }}>
-        {/* Login Modal */}
-        <Dialog
+        {/* Google Login Modal */}
+        <GoogleLoginModal
             open={showLoginModal}
             onClose={() => setShowLoginModal(false)}
-            aria-labelledby="login-required-dialog"
-        >
-          <DialogTitle id="login-required-dialog">
-            Login Required
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              You need to be logged in to upload and enhance images. Please sign in to continue.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setShowLoginModal(false)} color="primary">
-              Cancel
-            </Button>
-            <Button
-                onClick={() => {
-                  setShowLoginModal(false);
-                  // In a real app, you would redirect to login:
-                  // navigate('/login');
-                }}
-                color="primary"
-                variant="contained"
-            >
-              Login
-            </Button>
-          </DialogActions>
-        </Dialog>
+            setUser={setUser}
+        />
 
         <Card
             sx={{
@@ -251,7 +228,9 @@ export default function FileUploader() {
                 <Box
                     {...getRootProps()}
                     sx={{
-                      border: `2px dashed ${darkMode ? "#1DE9B6" : "#1DC4E9"}`,
+                      border: `2px dashed ${isDragActive
+                          ? (darkMode ? "#00BFA5" : "#00ACC1")
+                          : (darkMode ? "#1DE9B6" : "#1DC4E9")}`,
                       borderRadius: 3,
                       p: 4,
                       height: 200,
@@ -260,7 +239,9 @@ export default function FileUploader() {
                       justifyContent: "center",
                       alignItems: "center",
                       cursor: "pointer",
-                      bgcolor: darkMode ? "rgba(29, 233, 182, 0.05)" : "rgba(29, 196, 233, 0.05)",
+                      bgcolor: isDragActive
+                          ? (darkMode ? "rgba(29, 233, 182, 0.15)" : "rgba(29, 196, 233, 0.15)")
+                          : (darkMode ? "rgba(29, 233, 182, 0.05)" : "rgba(29, 196, 233, 0.05)"),
                       transition: "all 0.3s ease",
                       "&:hover": {
                         bgcolor: darkMode ? "rgba(29, 233, 182, 0.1)" : "rgba(29, 196, 233, 0.1)",
@@ -279,7 +260,7 @@ export default function FileUploader() {
                           }}
                       />
                       <Typography variant="h6" gutterBottom>
-                        Drag & Drop Your Image
+                        {isDragActive ? "Drop your image here" : "Drag & Drop Your Image"}
                       </Typography>
                       <Typography color="text.secondary">
                         or click to browse files
