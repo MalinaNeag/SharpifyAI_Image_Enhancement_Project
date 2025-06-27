@@ -1,5 +1,14 @@
 # SharpifyAI — Modular AI Image Enhancement
+
+[![Frontend](https://img.shields.io/badge/Frontend-React-00C7E6?logo=react&logoColor=white)](https://reactjs.org/)
+[![Backend](https://img.shields.io/badge/Backend-Flask-4B8BBE?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![AI Stack](https://img.shields.io/badge/AI_Stack-GFPGAN_|_RealESRGAN_|_TextBSR-9D4EDD?logo=openai&logoColor=white)](https://github.com/TencentARC/GFPGAN)
+[![Inference](https://img.shields.io/badge/Inference-Google_Colab-FFD600?logo=googlecolab&logoColor=white)](https://colab.research.google.com/)
+[![Storage](https://img.shields.io/badge/Cloud_Storage-AWS_S3-FF9900?logo=amazons3&logoColor=white)](https://aws.amazon.com/s3/)
+[![Authentication](https://img.shields.io/badge/Auth-Firebase-FF3D00?logo=firebase&logoColor=white)](https://firebase.google.com/)
+
 ![SharpifyAI Preview](image-enhancement-frontend/src/resources/preview.jpg)
+
 
 ## 💡 What is SharpifyAI?
 
