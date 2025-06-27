@@ -34,7 +34,7 @@ Built using **React (frontend)**, **Flask (backend)**, **Firebase Authentication
 
 ```bash
 git clone https://github.com/MalinaNeag/SharpifyAI_Image_Enhancement_Project.git
-cd modular-super-res-project
+cd SharpifyAI_Image_Enhancement_Project
 ```
 
 ### 🌍 Step 3: Set Up Environment Variables
@@ -104,7 +104,7 @@ python app.py
 In a separate terminal:
 
 ```bash
-cd ../image-enhancement-frontend
+cd image-enhancement-frontend
 npm install
 npm run start
 ```
@@ -116,7 +116,7 @@ This application is fully responsive and supports both desktop and mobile interf
 ## 📁 Project Structure
 
 ```
-modular-super-res-project/
+SharpifyAI_Image_Enhancement_Project/
 ├── image-enhancement-backend/   # Flask API
 ├── image-enhancement-frontend/  # React App
 ├── SharpifyAI.ipynb             # Colab Notebooks
