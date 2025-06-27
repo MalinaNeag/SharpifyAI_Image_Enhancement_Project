@@ -95,10 +95,10 @@ GRADIO_URL=https://your-gradio-link.gradio.live
 
 #### 🔑 Where to Get These Credentials
 
-- Firebase → https://console.firebase.google.com → Project Settings → Web App
-- Google OAuth → https://console.cloud.google.com → Credentials → OAuth 2.0
-- AWS IAM & S3 → https://aws.amazon.com → IAM + S3 bucket
-- Gradio → Generated from the Colab notebook
+- **Firebase**: Go to https://console.firebase.google.com → create a project → Project Settings → add a Web App → copy config to frontend `.env`
+- **Google OAuth**: Visit https://console.cloud.google.com → Credentials → create OAuth 2.0 Client ID (Web) → add redirect URI `http://127.0.0.1:5000/login/callback` → copy credentials to backend `.env`
+- **AWS**: Use IAM to create a user with S3 access → generate access keys → create an S3 bucket → add credentials to both `.env` files
+- **Gradio**: Open the Colab notebook → run all cells → copy the final Gradio URL → paste in both `.env` files
 
 ### 🚀 Step 4: Run the Backend
 
