@@ -33,7 +33,7 @@ Built using **React (frontend)**, **Flask (backend)**, **Firebase Authentication
 ### 📂 Step 2: Clone the Repository
 
 ```bash
-git clone https://github.com/MalinaNeag/modular-super-res-project.git  
+git clone https://github.com/MalinaNeag/SharpifyAI_Image_Enhancement_Project.git
 cd modular-super-res-project
 ```
 
